@@ -1,43 +1,39 @@
-# KnowledgeFlow
+ # KnowledgeFlow
 
 **Enterprise Knowledge Intelligence Platform**
 
 KnowledgeFlow is an open-source enterprise platform that transforms organizational documents into trusted, searchable, and AI-assisted knowledge.
 
-The platform combines modern Data Engineering, Knowledge Management, and Artificial Intelligence to automate document ingestion, metadata extraction, semantic indexing, knowledge discovery, and intelligent information retrieval.
-
-The long-term vision is to provide a scalable enterprise platform capable of continuously converting organizational information into trusted institutional intelligence.
+Built on modern Data Engineering principles, the platform automates document ingestion, metadata extraction, semantic indexing, and intelligent knowledge retrieval while maintaining transparency, traceability, and long-term maintainability.
 
 ---
 
 ## Project Status
 
-**Current Version**
+| Item | Status |
+|------|--------|
+| Project Stage | Foundation (Sprint 0) |
+| Current Version | v0.1.0 |
+| Development Status | Active Development |
+| License | Apache License 2.0 |
 
-v0.1.0 (Foundation)
+KnowledgeFlow is currently focused on establishing a solid engineering foundation before feature implementation begins.
 
-**Development Status**
-
-Active Development
-
-KnowledgeFlow is currently in the Foundation phase.
-
-The project is focused on establishing a solid software architecture, engineering standards, and core platform components before feature implementation begins.
-
-The current priorities include:
+Current priorities include:
 
 - Engineering Handbook
+- Project Charter
 - Architecture Decision Records (ADR)
 - System Architecture
 - Database Design
-- Repository Structure
 - Development Standards
+- Repository Structure
 
 ---
 
-## Problem Statement
+## Overview
 
-Every organization continuously produces valuable documents, including:
+Organizations continuously produce valuable documents, including:
 
 - Policies
 - Regulations
@@ -45,95 +41,67 @@ Every organization continuously produces valuable documents, including:
 - Standard Operating Procedures
 - Meeting Minutes
 - Reports
-- Contracts
 - Research Outputs
 - Technical Documentation
 
-As the number of documents grows, organizational knowledge becomes increasingly difficult to locate, understand, and reuse.
+As document collections grow, organizational knowledge becomes fragmented across thousands of files, making information increasingly difficult to discover, maintain, and reuse.
 
-Most organizations rely on traditional keyword search, folder structures, or manual knowledge sharing, resulting in duplicated work, information silos, and lost institutional knowledge.
-
-KnowledgeFlow addresses this challenge by transforming documents into structured, searchable, and AI-assisted organizational knowledge.
+KnowledgeFlow transforms these documents into structured organizational knowledge through automated processing, metadata extraction, semantic indexing, and AI-assisted retrieval.
 
 ---
 
 ## Vision
 
-To become a modern enterprise knowledge platform that transforms scattered organizational information into trusted institutional intelligence.
+To become a modern enterprise platform that transforms organizational information into trusted institutional intelligence.
 
 ---
 
-## Mission
+## Design Philosophy
 
-KnowledgeFlow is designed to help organizations:
+KnowledgeFlow is built around one central idea:
 
-- Collect documents from multiple sources
-- Extract metadata automatically
-- Build enterprise knowledge repositories
-- Support semantic search
-- Deliver trustworthy AI-assisted answers
-- Preserve institutional knowledge
-- Improve organizational decision making
+> **Every document should become trusted organizational knowledge.**
 
----
+Artificial Intelligence is treated as an enabling capability rather than the product itself.
 
-## Project Philosophy
+The platform prioritizes:
 
-KnowledgeFlow is not designed as a simple document management system.
-
-Instead, it is designed as an enterprise knowledge platform where documents become structured knowledge, knowledge becomes intelligence, and intelligence supports organizational decision making.
-
-Artificial Intelligence is treated as an enabling capability rather than the core product.
-
-The platform is built upon modern Data Engineering principles, ensuring that every AI-generated answer is supported by traceable sources, structured metadata, and reproducible processing pipelines.
-
----
-
-## Core Engineering Principles
-
-KnowledgeFlow is built around the following principles:
-
-- API First
-- Metadata First
-- Incremental Processing
-- Human-in-the-Loop
-- AI with Source Traceability
+- Traceability
+- Reproducibility
+- Modularity
+- Maintainability
 - Open Standards
-- Security by Design
-- Modular Architecture
-- Cloud Agnostic
-- Open Source First
+
+Every AI-generated answer should always be supported by verifiable source documents.
 
 ---
 
-## Planned Core Components
-
-The platform will gradually evolve through the following components.
+## Core Capabilities
 
 ### Document Management
 
 - Document Ingestion
-- Document Versioning
-- Metadata Repository
 - Object Storage
+- Version Management
+- Metadata Repository
 
 ### Data Engineering
 
+- OCR Processing
 - ETL Pipeline
-- OCR Pipeline
 - Metadata Extraction
 - Entity Extraction
-- Data Quality Validation
+- Data Validation
 
 ### Knowledge Intelligence
 
 - Semantic Search
 - Vector Embeddings
+- Retrieval-Augmented Generation (RAG)
 - Knowledge Graph
-- AI Question Answering
-- Source Attribution
+- AI-assisted Question Answering
 
-### Administration
+### Enterprise Administration
 
 - User Management
 - Role-Based Access Control
@@ -144,7 +112,7 @@ The platform will gradually evolve through the following components.
 
 ## High-Level Architecture
 
-```
+```text
                           +----------------------+
                           |    User Interface    |
                           +----------+-----------+
@@ -152,40 +120,38 @@ The platform will gradually evolve through the following components.
                                      |
                           +----------v-----------+
                           |       FastAPI        |
-                          |     REST API Layer   |
+                          |      REST API        |
                           +----------+-----------+
                                      |
-                 +-------------------+-------------------+
-                 |                   |                   |
-                 |                   |                   |
-      +----------v-------+  +--------v--------+  +-------v--------+
-      | PostgreSQL       |  | Object Storage  |  | Vector Database|
-      | Metadata         |  | Documents       |  | Embeddings     |
-      +------------------+  +-----------------+  +----------------+
-                 |
-                 |
-      +----------v---------------------------------------------+
-      |            ETL & Processing Pipeline                   |
-      | OCR • Metadata • Classification • Embeddings • AI      |
-      +--------------------------------------------------------+
+                +--------------------+--------------------+
+                |                    |                    |
+                |                    |                    |
+       +--------v--------+  +--------v--------+  +--------v--------+
+       | PostgreSQL      |  | Object Storage  |  | Vector Database |
+       | Metadata        |  | Documents       |  | Embeddings      |
+       +-----------------+  +-----------------+  +-----------------+
+                  |
+                  |
+       +----------v----------------------------------------------+
+       |              ETL & Processing Pipeline                  |
+       | OCR • Metadata • Classification • Embeddings • AI       |
+       +---------------------------------------------------------+
 ```
 
 ---
 
-## Technology Architecture
-
-The initial technology stack is planned as follows.
+## Technology Stack
 
 | Layer | Technology |
 |--------|------------|
 | Programming Language | Python |
 | API Framework | FastAPI |
+| Backend Framework | Django |
+| AI Workspace | Streamlit |
 | Database | PostgreSQL |
 | Vector Database | pgvector |
 | Workflow Orchestration | Apache Airflow |
 | OCR Engine | PaddleOCR |
-| Backend Administration | Django |
-| AI Workspace | Streamlit |
 | Containerization | Docker |
 | Cloud Platform | Microsoft Azure |
 | Version Control | GitHub |
@@ -194,19 +160,24 @@ The initial technology stack is planned as follows.
 
 ## Repository Structure
 
-```
+```text
 knowledgeflow/
 
-backend/
-frontend/
-docs/
-docker/
-infrastructure/
-scripts/
-tests/
-
-README.md
-LICENSE
+├── backend/
+├── frontend/
+├── docs/
+│   ├── handbook/
+│   ├── adr/
+│   ├── architecture/
+│   ├── database/
+│   ├── api/
+│   └── deployment/
+├── docker/
+├── infrastructure/
+├── scripts/
+├── tests/
+├── README.md
+└── LICENSE
 ```
 
 The repository structure will evolve as the project grows.
@@ -215,11 +186,12 @@ The repository structure will evolve as the project grows.
 
 ## Documentation
 
-KnowledgeFlow follows a documentation-first engineering approach.
+KnowledgeFlow follows a **documentation-first engineering** approach.
 
 Project documentation will include:
 
 - Engineering Handbook
+- Project Charter
 - Architecture Decision Records (ADR)
 - System Architecture
 - Database Design
@@ -228,101 +200,89 @@ Project documentation will include:
 - Development Standards
 - Security Guidelines
 
+Detailed documentation will be maintained under the **docs/** directory.
+
 ---
 
 ## Development Roadmap
 
-### Phase 1
-
-Foundation
-
-- Repository initialization
-- Engineering Handbook
-- Architecture Design
-- ADR
-- Development Standards
+| Phase | Focus |
+|--------|-------|
+| Phase 1 | Foundation |
+| Phase 2 | Document Platform |
+| Phase 3 | Metadata Intelligence |
+| Phase 4 | Enterprise Search & RAG |
+| Phase 5 | Enterprise Deployment |
 
 ---
 
-### Phase 2
+## Current Focus
 
-Document Platform
-
-- File Upload
-- Object Storage
-- OCR
-- Metadata Repository
-- Document Versioning
-
----
-
-### Phase 3
-
-Knowledge Platform
-
-- Metadata Intelligence
-- ETL Pipeline
-- Search Engine
-- Entity Extraction
-
----
-
-### Phase 4
-
-Enterprise Intelligence
-
-- Vector Search
-- RAG
-- AI Assistant
-- Knowledge Graph
-
----
-
-### Phase 5
-
-Enterprise Platform
-
-- Multi-Organization Support
-- Workflow Engine
-- Monitoring
-- Analytics
-- Enterprise Deployment
-
----
-
-## Current Milestone
-
-Sprint 0 — Foundation
+**Sprint 0 — Foundation**
 
 Current objectives:
 
 - Repository initialization
 - Engineering Handbook
+- Project Charter
 - Architecture Decision Records
-- Initial system design
-- Development environment
+- PostgreSQL schema design
+- Docker development environment
+- Development standards
 
 ---
 
-## Long-Term Goals
+## Engineering Principles
 
-KnowledgeFlow aims to become a production-ready enterprise platform suitable for:
+KnowledgeFlow follows several engineering principles.
 
-- Universities
-- Government Institutions
-- Research Organizations
-- Libraries
-- Healthcare Institutions
-- Private Enterprises
+- Architecture before implementation
+- Documentation before coding
+- Metadata before AI
+- API-first design
+- Modular architecture
+- Incremental processing
+- Security by design
+- Cloud-agnostic deployment
+- Automation over manual work
+- Open-source first
+
+---
+
+## Project Goals
+
+KnowledgeFlow aims to demonstrate modern enterprise software engineering through the development of a production-ready knowledge platform.
+
+The project focuses on:
+
+- Data Engineering
+- Knowledge Management
+- Artificial Intelligence
+- Enterprise Search
+- Cloud-native Architecture
+- API-first Development
+- Scalable System Design
+
+---
+
+## Non-Goals
+
+KnowledgeFlow is **not** intended to become:
+
+- A document editing platform
+- A replacement for Microsoft SharePoint
+- A file synchronization service
+- A general-purpose chatbot
+- A standalone Large Language Model (LLM)
 
 ---
 
 ## Contributing
 
-Contribution guidelines will be published after the Foundation phase is completed.
+Contribution guidelines will be published after the Foundation phase has been completed.
 
 ---
 
 ## License
 
-Licensed under the Apache License 2.0.
+This project is licensed under the Apache License 2.0.
