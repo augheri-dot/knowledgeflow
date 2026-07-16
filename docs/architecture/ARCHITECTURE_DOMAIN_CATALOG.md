@@ -728,3 +728,326 @@ Outgoing:
 9. Downstream services never directly access Processing outputs.
 
 10. Repository operations are fully auditable.
+
+---
+
+---
+
+# Domain 5 — Knowledge Discovery
+
+## Purpose
+
+The Knowledge Discovery domain is responsible for locating the most relevant knowledge assets required to answer user requests.
+
+Rather than generating responses, this domain focuses on efficient retrieval, semantic search, ranking, filtering, and context preparation.
+
+Knowledge Discovery provides the intelligence layer that determines *which knowledge should be used* before any AI reasoning begins.
+
+This separation allows retrieval strategies to evolve independently from AI models.
+
+---
+
+## Responsibilities
+
+- Execute semantic vector search.
+- Execute keyword and metadata search.
+- Support hybrid retrieval strategies.
+- Rank and rerank retrieved knowledge.
+- Build contextual evidence sets.
+- Detect cache opportunities.
+- Optimize retrieval performance.
+- Produce retrieval metadata.
+
+---
+
+## Inputs
+
+- User search requests.
+- Knowledge repository indexes.
+- Metadata repository.
+- Vector embeddings.
+- Search configuration.
+- Access control policies.
+
+---
+
+## Outputs
+
+- Ranked search results.
+- Retrieved knowledge chunks.
+- Context package.
+- Retrieval metadata.
+- Search statistics.
+- Cache lookup results.
+
+---
+
+## Core Components
+
+### Search Engine
+
+Performs structured and keyword-based search.
+
+Examples include:
+
+- BM25
+- Full-text search
+- Metadata filtering
+
+---
+
+### Vector Retrieval Engine
+
+Performs semantic similarity search using vector embeddings.
+
+Responsibilities include:
+
+- Top-K retrieval
+- Similarity scoring
+- Embedding lookup
+
+---
+
+### Hybrid Retrieval Coordinator
+
+Combines multiple retrieval strategies.
+
+Examples:
+
+- BM25 + Vector Search
+- Metadata + Semantic Search
+- Keyword fallback
+
+---
+
+### Reranking Engine
+
+Improves retrieval quality using advanced ranking models.
+
+Responsibilities:
+
+- Cross-encoder reranking
+- Relevance scoring
+- Duplicate reduction
+
+---
+
+### Context Builder
+
+Transforms retrieved documents into an optimized context package for downstream AI reasoning.
+
+Responsibilities:
+
+- Merge retrieved chunks
+- Preserve citations
+- Respect context window limits
+- Remove redundant passages
+
+---
+
+### Semantic Cache
+
+Stores validated responses and retrieval results to reduce unnecessary AI processing costs.
+
+Responsibilities:
+
+- Cache lookup
+- Semantic similarity matching
+- Cache expiration
+- Authorization-aware retrieval
+
+---
+
+## Domain Principles
+
+- Retrieval before generation.
+- Repository is the only source of knowledge.
+- Search and retrieval are independent capabilities.
+- Semantic cache must respect access control.
+- Hybrid search is preferred over single retrieval strategy.
+- Retrieval quality is measurable and continuously improved.
+
+---
+
+## Dependencies
+
+Consumes:
+
+- Knowledge Repository
+- Metadata Repository
+- Vector Store
+
+Provides services to:
+
+- Knowledge Intelligence
+
+---
+
+# Domain 6 — Knowledge Intelligence
+
+## Purpose
+
+The Knowledge Intelligence domain transforms retrieved knowledge into trustworthy, explainable, and evidence-based responses.
+
+Unlike the Discovery domain, this domain performs reasoning rather than searching.
+
+Knowledge Intelligence is responsible for prompt construction, LLM interaction, response validation, citation generation, and response optimization.
+
+Its primary objective is to maximize answer quality while minimizing hallucination risk.
+
+---
+
+## Responsibilities
+
+- Generate AI-assisted responses.
+- Construct prompts.
+- Validate generated outputs.
+- Enforce grounding.
+- Produce citations.
+- Detect hallucinations.
+- Optimize LLM usage.
+- Record inference metrics.
+
+---
+
+## Inputs
+
+- Context package.
+- User request.
+- Retrieval metadata.
+- Prompt templates.
+- Policy rules.
+- AI configuration.
+
+---
+
+## Outputs
+
+- Final response.
+- Citations.
+- Confidence score.
+- Validation report.
+- AI inference metrics.
+- Audit events.
+
+---
+
+## Core Components
+
+### Prompt Builder
+
+Constructs optimized prompts using retrieved context.
+
+Responsibilities:
+
+- Prompt templates
+- Context injection
+- Instruction management
+- Token optimization
+
+---
+
+### AI Orchestrator
+
+Coordinates communication with one or more AI providers.
+
+Responsibilities:
+
+- Model selection
+- Retry logic
+- Timeout handling
+- Provider abstraction
+
+---
+
+### Response Generator
+
+Generates responses using LLM inference.
+
+Responsibilities:
+
+- Response generation
+- Streaming support
+- Multi-turn reasoning
+
+---
+
+### Response Validator
+
+Ensures generated responses satisfy organizational quality requirements.
+
+Responsibilities:
+
+- Groundedness validation
+- Citation verification
+- Confidence scoring
+- Policy compliance
+
+---
+
+### Citation Engine
+
+Produces traceable references to authoritative knowledge sources.
+
+Responsibilities:
+
+- Source attribution
+- Passage references
+- Citation formatting
+
+---
+
+### Knowledge Guardrails
+
+Applies governance policies before responses are released.
+
+Responsibilities:
+
+- PII detection
+- Sensitive information filtering
+- Policy enforcement
+- Safety validation
+
+---
+
+## Domain Principles
+
+- Never generate unsupported answers.
+- Every response must be traceable.
+- Validation is mandatory before delivery.
+- AI augments knowledge rather than replacing authoritative sources.
+- Human trust is more important than model creativity.
+
+---
+
+## Dependencies
+
+Consumes:
+
+- Knowledge Discovery
+
+Provides services to:
+
+- Knowledge Delivery
+
+---
+
+## Cross-Domain Interaction
+
+Knowledge Discovery prepares evidence.
+
+Knowledge Intelligence performs reasoning.
+
+Discovery determines:
+
+> What information should be used.
+
+Intelligence determines:
+
+> How the information should be explained.
+
+Both domains remain loosely coupled and communicate only through the Context Package contract.
+
+No AI model is permitted to directly access raw repositories.
+
+---
