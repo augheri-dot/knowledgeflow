@@ -293,3 +293,234 @@ This first part of the Engineering Handbook establishes:
 - Engineering responsibilities.
 
 Subsequent sections will define development workflow, Git workflow, code review, testing strategy, engineering standards, and Definition of Done.
+
+---
+
+# 7. Development Standards
+
+Development standards establish a consistent engineering approach that improves software quality, maintainability, and collaboration across the entire project lifecycle.
+
+KnowledgeFlow prioritizes readability, simplicity, consistency, and long-term maintainability over short-term development speed.
+
+Every engineering contribution should follow the same standards regardless of programming language or implementation technology.
+
+---
+
+## 7.1 Coding Principles
+
+KnowledgeFlow follows several fundamental coding principles:
+
+- Write code for humans before machines.
+- Prefer readability over cleverness.
+- Keep functions small and focused.
+- Avoid unnecessary abstraction.
+- Eliminate duplicated logic whenever practical.
+- Favor composition over inheritance where appropriate.
+- Write self-documenting code whenever possible.
+- Optimize only after measurement.
+
+Code should be understandable by another engineer without requiring extensive explanation.
+
+---
+
+## 7.2 Naming Conventions
+
+Consistent naming improves readability throughout the project.
+
+General principles include:
+
+- Use descriptive names.
+- Avoid ambiguous abbreviations.
+- Prefer complete words over shortened forms.
+- Maintain consistent terminology across services.
+- Follow language-specific naming conventions.
+
+Examples:
+
+```
+Good
+
+DocumentIngestionService
+KnowledgeRetriever
+metadata_repository
+process_documents()
+
+Avoid
+
+Service1
+Utils
+Manager2
+tmp_data
+doStuff()
+```
+
+---
+
+## 7.3 Project Structure
+
+Each component should have a clearly defined responsibility.
+
+Project organization should encourage:
+
+- High cohesion
+- Low coupling
+- Clear module boundaries
+- Reusable components
+- Predictable directory structures
+
+Business logic should remain independent from infrastructure whenever practical.
+
+---
+
+## 7.4 Configuration Management
+
+Application configuration must remain external to application code.
+
+Configuration principles include:
+
+- Environment-based configuration
+- Secret isolation
+- Immutable defaults
+- Version-controlled templates
+- Reproducible environments
+
+Sensitive information must never be committed into source control.
+
+---
+
+## 7.5 Error Handling
+
+Errors should provide actionable information without exposing sensitive implementation details.
+
+Engineering guidelines include:
+
+- Fail fast when appropriate.
+- Return meaningful error messages.
+- Log technical details separately.
+- Avoid silent failures.
+- Preserve diagnostic information.
+
+Errors should help engineers identify root causes efficiently.
+
+---
+
+## 7.6 Logging Standards
+
+Logging is an engineering tool rather than a debugging shortcut.
+
+Logging should provide sufficient operational visibility while minimizing unnecessary noise.
+
+Recommended log levels include:
+
+- DEBUG
+- INFO
+- WARNING
+- ERROR
+- CRITICAL
+
+Sensitive information must never appear in application logs.
+
+---
+
+# 8. Git Workflow
+
+KnowledgeFlow follows a structured Git workflow to maintain repository quality, traceability, and collaboration.
+
+Every commit represents a meaningful engineering change.
+
+---
+
+## 8.1 Branch Strategy
+
+Recommended branches include:
+
+```
+main
+develop
+feature/*
+bugfix/*
+release/*
+hotfix/*
+```
+
+The main branch should always remain deployable.
+
+---
+
+## 8.2 Commit Message Convention
+
+Commit messages should clearly describe the engineering change.
+
+Examples:
+
+```
+Add document ingestion pipeline
+
+Update metadata extraction workflow
+
+Refactor search service
+
+Fix PostgreSQL connection timeout
+
+Improve API documentation
+```
+
+Avoid vague messages such as:
+
+```
+update
+
+fix
+
+change
+
+misc
+```
+
+---
+
+## 8.3 Pull Request Guidelines
+
+Each Pull Request should:
+
+- Solve one logical problem.
+- Include a clear description.
+- Reference related ADRs when applicable.
+- Pass automated validation.
+- Be reviewed before merging.
+
+Large Pull Requests should be avoided whenever possible.
+
+---
+
+## 8.4 Code Review Process
+
+Code review focuses on improving software quality rather than criticizing contributors.
+
+Review criteria include:
+
+- Correctness
+- Readability
+- Maintainability
+- Architecture alignment
+- Security
+- Performance
+- Testability
+
+Reviews should remain respectful, constructive, and educational.
+
+---
+
+## 8.5 Release Strategy
+
+Each release should be:
+
+- Versioned
+- Documented
+- Reproducible
+- Traceable
+- Backward compatible whenever possible
+
+Major architectural changes should be accompanied by Architecture Decision Records.
+
+---
