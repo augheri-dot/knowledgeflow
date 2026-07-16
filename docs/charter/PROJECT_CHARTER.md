@@ -113,3 +113,240 @@ The choice of European Union regulations does not limit the platform's future ap
 KnowledgeFlow is intentionally designed so that additional document domains—including enterprise policies, university regulations, healthcare documentation, financial regulations, technical standards, and contractual knowledge—can be supported through reusable ingestion pipelines and configurable connectors without requiring architectural redesign.
 
 The reference implementation serves as a demonstration of platform capabilities rather than a limitation of the platform's intended scope.
+
+---
+
+# Scope
+
+KnowledgeFlow is developed as a reusable Enterprise Knowledge Intelligence Platform designed to transform complex document collections into trusted, searchable, and actionable knowledge.
+
+The project scope includes the design, implementation, and validation of a modular knowledge intelligence platform together with an official reference implementation based on publicly available European Union regulatory documents.
+
+The platform architecture is intentionally domain-independent, allowing future knowledge domains to be incorporated without fundamental architectural changes.
+
+## In Scope
+
+The following capabilities are included within the current project scope:
+
+- Enterprise document ingestion
+- OCR processing for scanned documents
+- Metadata extraction and enrichment
+- Document classification
+- Semantic indexing
+- Vector-based similarity search
+- AI-assisted knowledge retrieval
+- Knowledge graph preparation
+- Regulatory intelligence reference implementation
+- RESTful API
+- Administrative interface
+- Modular ingestion pipelines
+- Extensible connector architecture
+- Traceable knowledge retrieval
+- Engineering documentation
+- Cloud-ready deployment architecture
+
+## Out of Scope
+
+The following capabilities are intentionally excluded from Version 1:
+
+- Enterprise Identity Management (SSO)
+- Business Process Management (BPM)
+- Workflow automation
+- Commercial licensing
+- ERP integration
+- CRM integration
+- Native mobile applications
+- Multi-tenant SaaS deployment
+- Real-time collaborative editing
+- Legal interpretation or compliance certification
+- Autonomous decision-making
+
+These capabilities may be considered in future project phases without altering the platform's architectural principles.
+
+---
+
+# Stakeholders
+
+KnowledgeFlow is intended to support multiple stakeholder groups across engineering, knowledge management, regulatory compliance, and enterprise information systems.
+
+## Primary Stakeholders
+
+- Solution Architect
+- Technical Lead
+- Engineering Team
+- Open Source Contributors
+
+## Target Users
+
+The platform is designed for organizations that manage large collections of structured and unstructured documents.
+
+Representative users include:
+
+- Compliance Officers
+- Legal Professionals
+- Knowledge Managers
+- Enterprise Architects
+- Data Engineers
+- Researchers
+- Information Specialists
+- Digital Transformation Teams
+
+## Future Stakeholders
+
+As the platform evolves, additional stakeholders may include:
+
+- Enterprise Customers
+- Consulting Partners
+- System Integrators
+- Software Vendors
+- Research Institutions
+
+---
+
+# Success Criteria
+
+KnowledgeFlow will be considered successful when it demonstrates the following outcomes.
+
+## Technical Success
+
+- Reliable document ingestion pipeline
+- Accurate metadata extraction
+- Stable semantic search capability
+- Explainable AI-assisted retrieval
+- Scalable platform architecture
+- Modular engineering design
+
+## Engineering Success
+
+- Comprehensive engineering documentation
+- Consistent governance model
+- Well-defined Architecture Decision Records
+- Reusable engineering standards
+- High maintainability
+- Clear separation of responsibilities
+
+## Demonstration Success
+
+The reference implementation should demonstrate:
+
+- Enterprise-scale document processing
+- Regulatory intelligence use cases
+- Publicly reproducible workflows
+- Traceable retrieval from authoritative sources
+- End-to-end knowledge lifecycle
+
+---
+
+# Constraints and Assumptions
+
+## Project Constraints
+
+KnowledgeFlow is developed under several practical constraints.
+
+These include:
+
+- Small engineering team
+- Limited infrastructure budget
+- Preference for open-source technologies
+- Publicly available reference datasets
+- Incremental development approach
+- Limited initial deployment scope
+
+These constraints encourage simplicity, maintainability, and careful architectural planning.
+
+## Project Assumptions
+
+The project assumes that:
+
+- Public regulatory documents remain accessible.
+- Modern AI technologies continue to improve.
+- PostgreSQL and pgvector remain suitable for semantic retrieval.
+- Python continues to provide a mature ecosystem for AI and Data Engineering.
+- Cloud platforms remain widely available for deployment.
+- Modular architecture reduces long-term maintenance costs.
+
+These assumptions will be periodically reviewed as the project evolves.
+
+---
+
+# Risks
+
+KnowledgeFlow recognizes that long-term engineering projects involve technical and organizational risks.
+
+The project emphasizes proactive mitigation through architecture and governance.
+
+| Risk | Mitigation Strategy |
+|-------|---------------------|
+| Changes in regulatory documents | Incremental ingestion pipeline |
+| AI hallucination | Retrieval-Augmented Generation (RAG) with source traceability |
+| Rapid technology evolution | Modular architecture and ADR governance |
+| Increasing document volume | Scalable storage and indexing architecture |
+| Metadata inconsistency | Metadata validation and normalization |
+| Engineering knowledge loss | Comprehensive documentation and governance |
+| Architectural drift | Architecture Decision Records and governance review |
+
+Risk management is considered an ongoing engineering activity rather than a one-time planning exercise.
+
+---
+
+# Project Principles
+
+KnowledgeFlow is guided by a small number of long-term principles that influence every engineering and architectural decision.
+
+## Platform Before Application
+
+KnowledgeFlow is designed as a reusable platform rather than a single-purpose application.
+
+## Architecture Before Implementation
+
+Implementation follows architecture.
+
+Architecture does not emerge from implementation.
+
+## Documentation as Knowledge
+
+Documentation is treated as an integral engineering asset rather than supplementary material.
+
+## Explainability Over Automation
+
+AI should assist human decision-making rather than replace it.
+
+Every important result should remain explainable and traceable to authoritative sources.
+
+## Reusability Over Specialization
+
+Platform components should maximize reuse across multiple knowledge domains whenever practical.
+
+## Incremental Delivery
+
+The project evolves through small, complete, reviewable improvements.
+
+Every engineering session should produce meaningful progress.
+
+## Long-Term Maintainability
+
+Engineering decisions prioritize sustainability over short-term convenience.
+
+## Single Source of Truth
+
+Every knowledge domain has exactly one authoritative document.
+
+Duplicate ownership is intentionally avoided.
+
+---
+
+# Charter Approval
+
+This Project Charter establishes the strategic direction for KnowledgeFlow Version 1.
+
+It defines the project's vision, mission, scope, engineering objectives, governance alignment, and long-term architectural direction.
+
+Subsequent engineering decisions shall remain consistent with the principles and objectives established in this charter.
+
+Detailed implementation decisions are documented separately within Engineering Governance, Architecture Decision Records (ADR), Engineering Standards, and other technical documentation.
+
+---
+
+**Document Status:** Draft v1.0
+
+This document will evolve incrementally alongside the KnowledgeFlow platform while preserving architectural consistency and governance integrity.
