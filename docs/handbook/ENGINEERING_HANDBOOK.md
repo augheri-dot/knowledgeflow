@@ -281,21 +281,6 @@ Engineering excellence is achieved through consistent collaboration rather than 
 
 ---
 
-# Part 1 Summary
-
-This first part of the Engineering Handbook establishes:
-
-- The purpose of engineering practices.
-- The scope of the handbook.
-- Engineering philosophy.
-- Engineering workflow.
-- Documentation workflow.
-- Engineering responsibilities.
-
-Subsequent sections will define development workflow, Git workflow, code review, testing strategy, engineering standards, and Definition of Done.
-
----
-
 # 7. Development Standards
 
 Development standards establish a consistent engineering approach that improves software quality, maintainability, and collaboration across the entire project lifecycle.
@@ -524,3 +509,210 @@ Each release should be:
 Major architectural changes should be accompanied by Architecture Decision Records.
 
 ---
+---
+
+# 9. Testing Strategy
+
+KnowledgeFlow adopts a comprehensive testing strategy to ensure software reliability, maintainability, and long-term stability.
+
+Testing is considered an integral part of the engineering process rather than a final verification activity.
+
+Engineering teams are encouraged to automate testing wherever practical and continuously validate software quality throughout the software development lifecycle.
+
+---
+
+## 9.1 Testing Philosophy
+
+KnowledgeFlow follows several guiding principles for software testing:
+
+- Test early and continuously.
+- Automate repetitive validation.
+- Verify behavior rather than implementation.
+- Prefer reliable tests over excessive test quantity.
+- Treat failing tests as engineering priorities.
+
+Testing is intended to increase engineering confidence while reducing the risk of regression.
+
+---
+
+## 9.2 Testing Pyramid
+
+KnowledgeFlow follows a layered testing strategy.
+
+```
+                End-to-End Tests
+             ---------------------
+             Integration Tests
+         ---------------------------
+               Unit Tests
+```
+
+The majority of automated tests should exist at the unit level, supported by integration tests and a limited number of end-to-end validation scenarios.
+
+This approach enables fast feedback during development while maintaining confidence in system-wide functionality.
+
+---
+
+## 9.3 Unit Testing
+
+Unit tests validate individual software components in isolation.
+
+Engineering guidelines include:
+
+- Test business logic independently.
+- Keep tests deterministic.
+- Avoid unnecessary external dependencies.
+- Minimize duplicated test cases.
+- Ensure tests execute quickly.
+
+Unit tests should provide immediate feedback during software development.
+
+---
+
+## 9.4 Integration Testing
+
+Integration tests verify interactions between multiple software components.
+
+Typical integration scenarios include:
+
+- Database connectivity
+- Metadata ingestion
+- API communication
+- Search indexing
+- Authentication workflow
+
+Integration testing ensures that independently validated components operate correctly as an integrated platform.
+
+---
+
+## 9.5 End-to-End Testing
+
+End-to-end testing validates complete business workflows from the user's perspective.
+
+Representative workflows include:
+
+- Document ingestion
+- Metadata extraction
+- Knowledge retrieval
+- Semantic search
+- AI-assisted exploration
+
+End-to-end tests should focus on critical business capabilities rather than exhaustive scenario coverage.
+
+---
+
+## 9.6 Test Coverage
+
+Test coverage should be considered a supporting engineering metric rather than the primary objective.
+
+Engineering teams should prioritize:
+
+- Meaningful test scenarios
+- High-risk functionality
+- Critical business workflows
+- Regression prevention
+
+High numerical coverage does not necessarily indicate high software quality.
+
+---
+
+# 10. Security Principles
+
+KnowledgeFlow treats security as a fundamental engineering responsibility.
+
+Security considerations should be incorporated throughout the software development lifecycle rather than introduced after implementation.
+
+---
+
+## 10.1 Security by Design
+
+Security should be considered during architecture, implementation, deployment, and maintenance.
+
+Engineering principles include:
+
+- Least privilege
+- Defense in depth
+- Secure defaults
+- Explicit trust boundaries
+- Continuous risk reduction
+
+Every architectural decision should evaluate potential security implications.
+
+---
+
+## 10.2 Authentication and Authorization
+
+Authentication verifies user identity.
+
+Authorization determines permitted actions.
+
+KnowledgeFlow separates these responsibilities to improve maintainability, scalability, and security.
+
+Access control should always follow the Principle of Least Privilege.
+
+---
+
+## 10.3 Secret Management
+
+Sensitive credentials must never be stored within source code repositories.
+
+Examples include:
+
+- Database credentials
+- API keys
+- Cloud service credentials
+- Encryption keys
+- Access tokens
+
+Secrets should be managed using secure configuration mechanisms appropriate for the deployment environment.
+
+---
+
+## 10.4 Input Validation
+
+All external input should be considered untrusted until validated.
+
+Validation principles include:
+
+- Validate input format.
+- Reject invalid data.
+- Sanitize user input where appropriate.
+- Apply consistent validation rules.
+- Fail safely whenever validation cannot be completed.
+
+Proper input validation significantly reduces the likelihood of security vulnerabilities.
+
+---
+
+## 10.5 Dependency Management
+
+Third-party libraries should be carefully evaluated before adoption.
+
+Engineering teams should:
+
+- Prefer actively maintained libraries.
+- Monitor security advisories.
+- Update dependencies regularly.
+- Remove unused packages.
+- Minimize unnecessary dependencies.
+
+Maintaining healthy dependencies contributes significantly to long-term platform resilience.
+
+---
+
+## 10.6 Security Logging and Monitoring
+
+Security-related events should be logged appropriately to support operational monitoring and incident investigation.
+
+Examples include:
+
+- Authentication failures
+- Authorization violations
+- Unexpected exceptions
+- Configuration changes
+- Administrative activities
+
+Security logging should balance operational visibility with privacy and confidentiality requirements.
+
+---
+
