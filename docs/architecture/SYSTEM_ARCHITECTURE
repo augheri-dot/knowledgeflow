@@ -815,3 +815,145 @@ Architectural stability is achieved through clear ownership boundaries rather th
 Common technical capabilities are provided by Shared Platform Services rather than duplicated across domains.
 
 Examples include authentication, messaging, configuration, monitoring, caching, and platform infrastructure services.
+
+---
+
+## 9.5 Domain Collaboration
+
+The Logical Architecture defines how architectural domains collaborate while preserving clear ownership boundaries and loose coupling.
+
+Collaboration enables the Enterprise Knowledge Lifecycle to operate as a cohesive platform without requiring domains to understand each other's internal implementations.
+
+Every collaboration occurs through stable contracts and follows well-defined architectural responsibilities.
+
+---
+
+### 9.5.1 Collaboration Philosophy
+
+KnowledgeFlow adopts a collaboration model based on independent architectural domains.
+
+Each domain focuses exclusively on its own business capability while collaborating with other domains through published contracts.
+
+Domains do not access internal implementations, private data structures, or internal workflows belonging to other domains.
+
+This approach enables architectural stability while allowing individual domains to evolve independently.
+
+---
+
+### 9.5.2 Collaboration Model
+
+Domain collaboration follows a directional flow aligned with the Enterprise Knowledge Lifecycle.
+
+Knowledge progresses through multiple architectural domains, with each domain contributing a specific capability before passing responsibility to the next stage.
+
+Although collaboration generally follows a logical progression, domains remain independently deployable and communicate only through agreed contracts.
+
+No domain orchestrates the internal implementation of another domain.
+
+---
+
+### 9.5.3 Collaboration Patterns
+
+The Logical Architecture recognizes four primary collaboration patterns.
+
+#### Capability Collaboration
+
+Domains consume published capabilities rather than implementation details.
+
+---
+
+#### Directional Dependency
+
+Dependencies remain intentional, explicit, and one-directional whenever possible.
+
+Upstream domains remain independent of downstream consumers.
+
+---
+
+#### Event Publication
+
+Domains publish significant business events without requiring knowledge of event consumers.
+
+Publishers remain independent from subscribers.
+
+---
+
+#### Shared Platform Services
+
+Common platform capabilities are consumed through Shared Platform Services rather than duplicated across domains.
+
+Shared services provide technical capabilities without introducing business ownership.
+
+---
+
+### 9.5.4 Dependency Principles
+
+Domain dependencies should follow several architectural rules.
+
+- Dependencies must remain directional.
+- Circular dependencies are prohibited.
+- Business capabilities should not be duplicated.
+- Consumers depend on contracts rather than implementations.
+- Collaboration should minimize runtime coupling.
+- Asynchronous collaboration is preferred whenever practical.
+
+---
+
+### 9.5.5 Shared Platform Collaboration
+
+Shared Platform Services provide common technical capabilities required across multiple architectural domains.
+
+Typical shared capabilities include:
+
+- Authentication
+- Authorization
+- Configuration
+- Messaging
+- Monitoring
+- Caching
+- Secret Management
+- Platform Configuration
+
+These services remain independent of business workflows and do not own enterprise knowledge.
+
+---
+
+### 9.5.6 Collaboration Rules
+
+The Logical Architecture follows the following collaboration rules.
+
+#### Independent Ownership
+
+Every domain owns its own business capability.
+
+---
+
+#### Stable Contracts
+
+Collaboration always occurs through published contracts.
+
+---
+
+#### No Shared Business Logic
+
+Business logic remains inside the owning domain.
+
+---
+
+#### No Direct Repository Bypass
+
+Published enterprise knowledge is accessed exclusively through the Knowledge Repository.
+
+---
+
+#### Consumer Independence
+
+A publishing domain should never require knowledge of its consumers.
+
+---
+
+#### Evolution Without Coordination
+
+Domains should be capable of evolving independently without requiring synchronized implementation changes across the platform.
+
+---
