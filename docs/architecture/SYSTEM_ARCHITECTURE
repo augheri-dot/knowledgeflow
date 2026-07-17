@@ -1304,3 +1304,91 @@ Business ownership remains within the responsible architectural domain.
 Every interaction has a clearly identified owning domain responsible for its execution and business outcome.
 
 ---
+
+## 9.8 Logical Architecture Finalization
+
+The Logical Architecture establishes the stable architectural foundation for the KnowledgeFlow platform.
+
+It defines the logical organization of architectural domains, their responsibilities, collaboration model, interaction patterns, and governance capabilities while remaining independent of implementation technologies and deployment environments.
+
+The purpose of this chapter is not to prescribe implementation details, but to provide a durable architectural blueprint that guides future engineering decisions.
+
+---
+
+### 9.8.1 Architectural Cohesion
+
+The Logical Architecture should be understood as a single coherent architectural model rather than a collection of independent domains.
+
+Each architectural domain contributes a distinct business capability while collaborating through stable contracts, clearly defined responsibilities, and shared architectural principles.
+
+Collectively, these domains support the complete Enterprise Knowledge Lifecycle from knowledge acquisition to knowledge delivery.
+
+No domain exists in isolation.
+
+The value of the platform emerges from coordinated collaboration across the entire architecture.
+
+---
+
+### 9.8.2 Enterprise Knowledge Lifecycle Alignment
+
+The Logical Architecture directly supports the Enterprise Knowledge Lifecycle established by KnowledgeFlow.
+
+Across the platform, knowledge progresses through a series of business-oriented stages:
+
+- Knowledge Acquisition
+- Knowledge Processing
+- Knowledge Publication
+- Knowledge Discovery
+- Knowledge Intelligence
+- Knowledge Delivery
+- Knowledge Improvement
+
+Each stage represents a logical business capability rather than a technical implementation.
+
+Together, these capabilities transform authoritative information into trusted organizational knowledge while preserving traceability, governance, and enterprise trust.
+
+---
+
+### 9.8.3 Architectural Consistency
+
+The Logical Architecture is governed by a consistent set of architectural principles.
+
+These principles include:
+
+- domain-oriented organization
+- stable architectural boundaries
+- loose coupling
+- repository-centric knowledge management
+- event-driven collaboration
+- governance by design
+- transport independence
+- business-oriented interactions
+- AI-assisted knowledge intelligence
+
+These principles provide architectural consistency across all current and future platform capabilities.
+
+---
+
+### 9.8.4 Future Architectural Evolution
+
+The Logical Architecture is intentionally designed to support long-term evolution.
+
+Future architectural work may introduce additional implementation detail, deployment strategies, infrastructure capabilities, and operational optimizations without redefining the logical responsibilities established by this document.
+
+Subsequent architectural layers should refine the logical architecture rather than replace it.
+
+This approach enables continuous platform evolution while preserving architectural stability.
+
+---
+
+### 9.8.5 Architectural Baseline
+
+This document establishes the official logical architectural baseline for the KnowledgeFlow platform.
+
+Future architectural documents—including Physical Architecture, Component Architecture, Data Architecture, Security Architecture, and Deployment Architecture—should remain aligned with the logical architectural model defined herein.
+
+The logical architecture serves as the authoritative reference for architectural decision-making across the platform.
+
+Every subsequent architectural layer should extend this foundation while preserving the domain boundaries, collaboration principles, interaction philosophy, and governance model established by this document.
+
+---
