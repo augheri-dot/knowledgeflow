@@ -529,3 +529,155 @@ Knowledge improvements require governed validation and appropriate human oversig
 Every interaction contributes to improving organizational knowledge quality, governance, and operational excellence.
 
 ---
+
+# 9. Logical Architecture
+
+The Logical Architecture defines how independently owned architectural domains collaborate to realize the Enterprise Knowledge Lifecycle.
+
+Unlike the Conceptual Architecture, which focuses on the lifecycle of enterprise knowledge, the Logical Architecture focuses on the collaboration of architectural domains and their interactions.
+
+This chapter establishes the logical organization of the platform while remaining independent of implementation technologies, deployment environments, and infrastructure decisions.
+
+The Logical Architecture provides the bridge between the conceptual model and the future Physical Architecture.
+
+---
+
+## 9.1 Purpose
+
+The purpose of the Logical Architecture is to define how architectural domains collaborate to deliver trusted enterprise knowledge.
+
+Rather than describing software components or deployment topology, this chapter identifies logical responsibilities, ownership boundaries, collaboration patterns, and interaction contracts between domains.
+
+The Logical Architecture serves as the primary reference for solution architects, software engineers, data engineers, and platform engineers during system implementation.
+
+It provides a stable architectural model that remains consistent even as implementation technologies evolve.
+
+---
+
+## 9.2 Architectural Vision
+
+KnowledgeFlow is organized as a collection of independently governed architectural domains.
+
+Each domain owns a specific business capability and exposes its functionality through stable contracts rather than implementation details.
+
+Domains collaborate to realize the Enterprise Knowledge Lifecycle while preserving clear ownership, loose coupling, and long-term maintainability.
+
+The platform intentionally separates knowledge acquisition, processing, storage, discovery, intelligence, delivery, and governance into independent logical domains.
+
+This separation enables the platform to evolve incrementally without requiring large-scale architectural redesign.
+
+> **Architectural North Star**
+>
+> The Logical Architecture defines how independently owned architectural domains collaborate through stable contracts to deliver trusted enterprise knowledge.
+
+---
+
+## 9.3 Logical Design Principles
+
+The Logical Architecture is governed by the following principles.
+
+---
+
+### Domain-Oriented Collaboration
+
+Each architectural domain owns a clearly defined business capability.
+
+Responsibilities are not duplicated across domains.
+
+Every domain maintains explicit ownership boundaries.
+
+---
+
+### Stable Contracts
+
+Domains collaborate through contracts rather than implementation details.
+
+Contracts may include:
+
+- APIs
+- Events
+- Commands
+- Queries
+- Published Interfaces
+
+Internal implementation remains private to each domain.
+
+---
+
+### Loose Coupling
+
+Domains should remain independently evolvable.
+
+Changes within one domain should minimize impact on other domains whenever possible.
+
+Dependencies should always be intentional, explicit, and well documented.
+
+---
+
+### High Cohesion
+
+Each domain should encapsulate closely related responsibilities.
+
+Capabilities that naturally belong together should remain within the same domain.
+
+Unrelated responsibilities should not be combined into a single domain.
+
+---
+
+### Repository-Centric Knowledge
+
+Published enterprise knowledge exists exclusively within the Knowledge Repository.
+
+No downstream domain consumes temporary processing artifacts.
+
+Every consumer accesses authoritative knowledge through the repository.
+
+---
+
+### Event-Driven Collaboration
+
+Asynchronous communication is preferred whenever appropriate.
+
+Events allow domains to collaborate without introducing unnecessary runtime dependencies.
+
+Synchronous interactions remain limited to scenarios requiring immediate responses.
+
+---
+
+### Contract Before Technology
+
+Logical Architecture defines collaboration independently of implementation technologies.
+
+Technology choices belong to the Physical Architecture.
+
+Logical contracts remain stable regardless of programming language, cloud provider, messaging platform, or database technology.
+
+---
+
+### Governance Everywhere
+
+Governance is an integral part of every domain interaction.
+
+Security, lineage, auditing, compliance, observability, and FinOps are applied consistently across the entire platform.
+
+Governance is never treated as an afterthought.
+
+---
+
+### AI as a Consumer of Knowledge
+
+Artificial Intelligence consumes trusted enterprise knowledge rather than replacing it.
+
+AI reasoning always operates on retrieved evidence originating from the Knowledge Repository.
+
+Every AI-generated response must remain explainable and traceable.
+
+---
+
+### Evolution Through Stable Boundaries
+
+The platform evolves by extending or improving individual domains without compromising established architectural boundaries.
+
+Architectural stability is achieved through clearly defined responsibilities and collaboration contracts rather than rigid implementations.
+
+---
