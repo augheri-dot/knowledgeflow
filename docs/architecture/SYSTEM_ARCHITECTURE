@@ -1129,6 +1129,176 @@ Implementation changes within one domain should not require changes across the e
 
 ---
 
+## 9.7 Governance Integration
+
+Governance is a foundational architectural capability that operates across the entire KnowledgeFlow platform.
+
+Rather than belonging to a single architectural domain, governance provides platform-wide oversight that ensures every domain operates according to organizational policies, security requirements, regulatory obligations, and operational standards.
+
+Governance enables enterprise trust without introducing unnecessary coupling between business domains.
+
+---
+
+### 9.7.1 Governance Philosophy
+
+KnowledgeFlow adopts a governance-by-design approach.
+
+Governance is embedded into the architecture from the beginning rather than introduced after implementation.
+
+Every architectural domain remains independently owned while governance continuously observes platform behavior through policies, auditing, monitoring, and compliance controls.
+
+Governance supports platform evolution without assuming ownership of business capabilities.
+
+---
+
+### 9.7.2 Cross-Domain Governance
+
+Governance spans every architectural domain.
+
+Its responsibilities include:
+
+- enforcing architectural policies
+- validating operational compliance
+- collecting audit information
+- monitoring platform health
+- tracking data lineage
+- supporting cost visibility
+- protecting enterprise assets
+
+Governance does not execute business workflows.
+
+Instead, it provides consistent oversight while allowing each domain to retain full ownership of its responsibilities.
+
+---
+
+### 9.7.3 Security Integration
+
+Security is integrated throughout the logical architecture.
+
+Security capabilities include:
+
+- identity verification
+- authorization
+- policy enforcement
+- secret protection
+- secure communication
+- access governance
+
+Security controls apply consistently across all architectural domains through shared governance capabilities rather than domain-specific implementations.
+
+---
+
+### 9.7.4 Compliance & Auditability
+
+Enterprise knowledge platforms require complete operational transparency.
+
+KnowledgeFlow maintains auditability by recording significant business activities throughout the Enterprise Knowledge Lifecycle.
+
+Typical auditable activities include:
+
+- knowledge acquisition
+- processing operations
+- publication events
+- retrieval requests
+- AI-assisted responses
+- administrative actions
+
+Audit records support regulatory compliance, operational investigation, and continuous governance.
+
+---
+
+### 9.7.5 Data Lineage & Observability
+
+Every published knowledge asset should remain traceable to its authoritative origin.
+
+Data lineage enables the platform to understand:
+
+- where knowledge originated
+- how knowledge was transformed
+- which processing steps were applied
+- which published assets were produced
+- how knowledge was ultimately delivered
+
+Observability complements lineage by providing visibility into platform behavior through monitoring, telemetry, logging, and operational metrics.
+
+Together, lineage and observability support enterprise reliability, troubleshooting, and regulatory accountability.
+
+---
+
+### 9.7.6 FinOps & Operational Excellence
+
+KnowledgeFlow treats operational efficiency as an architectural responsibility.
+
+Governance continuously monitors platform resource utilization, AI consumption, and operational costs.
+
+Typical governance objectives include:
+
+- monitoring AI service consumption
+- tracking infrastructure utilization
+- supporting cost transparency
+- enabling operational optimization
+- improving resource efficiency
+
+Operational excellence balances scalability, reliability, performance, and cost-awareness without compromising architectural integrity.
+
+---
+
+### 9.7.7 Governance Principles
+
+The Logical Architecture follows several governance principles.
+
+#### Governance by Design
+
+Governance is embedded into the platform architecture from the beginning.
+
+---
+
+#### Platform-Wide Visibility
+
+Governance observes all architectural domains while preserving independent ownership.
+
+---
+
+#### Policy-Driven Operations
+
+Platform behavior is guided by organizational policies rather than implementation-specific rules.
+
+---
+
+#### Complete Traceability
+
+Every published knowledge asset should remain traceable throughout its lifecycle.
+
+---
+
+#### Security as a Shared Responsibility
+
+Security is integrated across all domains through shared governance capabilities.
+
+---
+
+#### Operational Transparency
+
+Monitoring, auditing, observability, and lineage provide continuous visibility into platform behavior.
+
+---
+
+#### Cost-Aware Platform
+
+Operational decisions should consider resource efficiency and long-term sustainability.
+
+---
+
+#### Independent Business Domains
+
+Governance observes every domain but owns none of them.
+
+Business ownership remains within the responsible architectural domain.
+
+---
+
+---
+
 #### Explicit Ownership
 
 Every interaction has a clearly identified owning domain responsible for its execution and business outcome.
