@@ -731,8 +731,6 @@ Outgoing:
 
 ---
 
----
-
 # Domain 5 — Knowledge Discovery
 
 ## Purpose
@@ -1051,3 +1049,122 @@ Both domains remain loosely coupled and communicate only through the Context Pac
 No AI model is permitted to directly access raw repositories.
 
 ---
+
+## 7. Knowledge Delivery Domain
+
+### Purpose
+
+The Knowledge Delivery Domain provides the interface between the KnowledgeFlow platform and its consumers.
+
+This domain is responsible for delivering search results, AI-generated responses, APIs, and user interactions while remaining independent from internal knowledge processing logic.
+
+Knowledge Delivery ensures that every response presented to users is secure, explainable, traceable, and compliant with organizational policies.
+
+---
+
+### Responsibilities
+
+- Deliver search results.
+- Deliver AI-generated responses.
+- Render citations and supporting evidence.
+- Expose platform APIs.
+- Provide Web UI.
+- Provide Chat UI.
+- Handle user interaction sessions.
+- Forward user feedback.
+- Enforce presentation policies.
+- Respect authorization boundaries.
+
+---
+
+### Inputs
+
+- Validated AI responses.
+- Search results.
+- Supporting citations.
+- User identity.
+- Authorization context.
+- UI requests.
+- API requests.
+- Platform policies.
+
+---
+
+### Outputs
+
+- Search responses.
+- AI responses.
+- API responses.
+- User feedback events.
+- Delivery metrics.
+- Usage telemetry.
+- User interaction logs.
+
+---
+
+### Core Capabilities
+
+#### Web Portal
+
+Provides a browser-based interface for searching and browsing organizational knowledge.
+
+#### Conversational Interface
+
+Supports natural language interaction with the knowledge platform.
+
+#### REST API
+
+Provides integration endpoints for external applications and services.
+
+#### Citation Rendering
+
+Displays supporting documents and references associated with every response.
+
+#### Evidence Presentation
+
+Presents traceable supporting evidence to improve explainability.
+
+#### Session Management
+
+Maintains user interaction sessions and conversation context.
+
+#### Feedback Collection
+
+Collects ratings, corrections, and improvement suggestions from users.
+
+#### Access-aware Response Delivery
+
+Ensures every response respects authorization policies before being delivered.
+
+---
+
+### Interactions
+
+Consumes services from:
+
+- Knowledge Discovery Domain
+- Knowledge Intelligence Domain
+
+Produces:
+
+- User Feedback Events
+- Delivery Metrics
+- Usage Telemetry
+
+Collaborates with:
+
+- Platform Governance Domain
+- Shared Platform Services Domain
+
+---
+
+### Design Principles
+
+- Presentation-only responsibilities.
+- Never perform knowledge processing.
+- Never access repositories directly.
+- Stateless whenever possible.
+- Secure by default.
+- Explainability by design.
+- Human-centric interaction.
+- Authorization-aware response delivery.
