@@ -1278,3 +1278,177 @@ Depends on:
 - Kubernetes / Container Platform
 - Identity Provider
 - Monitoring Stack
+
+---
+
+## 10. Domain Interaction Principles
+
+The KnowledgeFlow platform adopts a domain-oriented architecture where each domain owns a clearly defined set of responsibilities.
+
+To preserve maintainability, scalability, and loose coupling, all interactions between domains follow the principles described below.
+
+---
+
+### Principle 1 — Domain Ownership
+
+Each domain owns its own business capabilities and data.
+
+Other domains may consume published interfaces but must never modify another domain's internal state directly.
+
+---
+
+### Principle 2 — Repository as the Single Source of Truth
+
+The Knowledge Repository is the authoritative source of published knowledge.
+
+No downstream domain may consume unpublished or intermediate processing results.
+
+---
+
+### Principle 3 — Interface-Based Communication
+
+Domains communicate exclusively through published interfaces, APIs, or events.
+
+Direct implementation dependencies between domains should be avoided.
+
+---
+
+### Principle 4 — Event-Driven Collaboration
+
+Whenever appropriate, domains communicate asynchronously using immutable events.
+
+Event producers never depend on event consumers.
+
+---
+
+### Principle 5 — Separation of Search and Intelligence
+
+Knowledge Discovery determines what information should be retrieved.
+
+Knowledge Intelligence determines how retrieved information should be interpreted and presented.
+
+---
+
+### Principle 6 — Authorization-Aware Interactions
+
+Every interaction involving user data or cached responses must validate authorization before access is granted.
+
+---
+
+### Principle 7 — Human-in-the-Loop Curation
+
+User feedback may improve organizational knowledge.
+
+However, curated knowledge must pass human approval before becoming part of the published repository.
+
+---
+
+### Principle 8 — Governance by Observation
+
+Platform Governance supervises every architectural domain.
+
+Governance services never own business logic or business data.
+
+---
+
+### Principle 9 — Shared Services are Infrastructure
+
+Shared Platform Services provide reusable technical capabilities but never contain domain-specific business logic.
+
+---
+
+### Principle 10 — Everything is Observable
+
+All platform interactions should generate sufficient telemetry, audit information, and operational metrics to support monitoring, troubleshooting, and continuous improvement.
+
+---
+
+## 11. Domain Ownership Matrix
+
+| Domain | Owns | Does Not Own |
+|---------|------|--------------|
+| Knowledge Acquisition | External document ingestion | Processing logic |
+| Knowledge Orchestration | Workflow coordination | Business knowledge |
+| Knowledge Processing | Parsed and enriched knowledge | Published repository |
+| Knowledge Repository | Published knowledge assets | User interaction |
+| Knowledge Discovery | Search and retrieval | AI reasoning |
+| Knowledge Intelligence | AI reasoning and validation | Knowledge storage |
+| Knowledge Delivery | User interaction and APIs | Business logic |
+| Platform Governance | Policies and compliance | Business capabilities |
+| Shared Platform Services | Common technical capabilities | Domain ownership |
+
+---
+
+## 12. Domain Evolution Guidelines
+
+The KnowledgeFlow architecture is expected to evolve over time.
+
+To preserve architectural consistency, the following evolution principles apply.
+
+---
+
+### Stable Domain Boundaries
+
+Domain responsibilities should remain stable even when implementations evolve.
+
+---
+
+### Independent Evolution
+
+Domains should evolve independently whenever possible.
+
+---
+
+### Versioned Interfaces
+
+Breaking interface changes require versioning and architecture review.
+
+---
+
+### Architecture Decision Records
+
+Significant architectural decisions must be documented through Architecture Decision Records (ADR).
+
+---
+
+### Backward Compatibility
+
+Public interfaces should preserve backward compatibility whenever practical.
+
+---
+
+### Continuous Refactoring
+
+Internal implementations may be continuously improved without affecting published contracts.
+
+---
+
+### Cloud-Native Evolution
+
+Architecture should remain deployable across cloud-native environments.
+
+---
+
+### Governance Alignment
+
+Every architectural change must remain aligned with platform governance policies.
+
+## 13. Glossary
+
+| Term | Definition |
+|------|------------|
+| Knowledge Asset | Any document, metadata, or structured information managed by KnowledgeFlow. |
+| Knowledge Repository | The authoritative repository containing published organizational knowledge. |
+| Knowledge Discovery | The process of locating relevant knowledge assets. |
+| Knowledge Intelligence | AI-assisted reasoning based on retrieved knowledge. |
+| Context Package | Curated evidence prepared for AI reasoning. |
+| Semantic Search | Retrieval based on vector similarity. |
+| Hybrid Search | Combination of keyword and semantic retrieval. |
+| Groundedness | The degree to which AI responses are supported by authoritative sources. |
+| Hallucination | AI-generated information not supported by retrieved evidence. |
+| Data Lineage | Traceability of knowledge throughout its lifecycle. |
+| Responsible AI | AI practices emphasizing transparency, explainability, fairness, and safety. |
+| FinOps | Operational practices for monitoring and optimizing cloud costs. |
+| Human-in-the-Loop (HITL) | Human validation before curated knowledge becomes authoritative. |
+| Event Bus | Infrastructure supporting asynchronous communication between domains. |
+| Shared Platform Services | Common reusable technical capabilities shared across domains. |
