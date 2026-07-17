@@ -957,3 +957,180 @@ A publishing domain should never require knowledge of its consumers.
 Domains should be capable of evolving independently without requiring synchronized implementation changes across the platform.
 
 ---
+
+## 9.6 Logical Interaction Patterns
+
+The Logical Interaction Patterns define how architectural domains exchange information while preserving domain independence, stable collaboration contracts, and clear architectural responsibilities.
+
+Rather than describing implementation technologies or communication protocols, this section defines the logical intent behind domain interactions.
+
+Each interaction represents a business outcome that contributes to the Enterprise Knowledge Lifecycle while maintaining loose coupling across the platform.
+
+---
+
+### 9.6.1 Interaction Philosophy
+
+KnowledgeFlow treats interactions as expressions of business intent rather than technical operations.
+
+Architectural domains collaborate by exchanging meaningful requests, commands, queries, and events that represent business outcomes instead of implementation-specific actions.
+
+Logical interactions remain independent of transport mechanisms, messaging technologies, deployment topology, and infrastructure choices.
+
+This separation enables the logical architecture to remain stable while implementation technologies evolve over time.
+
+---
+
+### 9.6.2 Request–Response Pattern
+
+The Request–Response pattern is used when a domain requires an immediate response from another domain.
+
+Typical characteristics include:
+
+- synchronous interaction
+- immediate business outcome
+- well-defined request contract
+- deterministic response
+- bounded execution scope
+
+This interaction pattern is appropriate for operations that require immediate validation, lookup, or decision-making.
+
+Request–Response interactions should remain lightweight and avoid initiating long-running business workflows.
+
+---
+
+### 9.6.3 Command Pattern
+
+A Command represents an explicit request for another domain to perform a business action.
+
+Commands express business intent rather than implementation details.
+
+Typical characteristics include:
+
+- intent to change business state
+- explicit ownership of execution
+- clear responsibility
+- acknowledgement of acceptance
+- independent execution
+
+Examples of business-oriented commands include:
+
+- Accept Knowledge
+- Process Knowledge
+- Publish Knowledge
+- Curate Knowledge
+- Deliver Knowledge
+
+Commands do not prescribe how a domain performs its internal processing.
+
+---
+
+### 9.6.4 Query Pattern
+
+A Query requests business information without modifying the state of the platform.
+
+Queries should remain side-effect free.
+
+Typical characteristics include:
+
+- read-only interaction
+- deterministic result
+- no business state modification
+- optimized for information retrieval
+- reusable across multiple consumers
+
+Query interactions support knowledge discovery while preserving repository integrity.
+
+---
+
+### 9.6.5 Event-Driven Pattern
+
+Events communicate that a significant business outcome has occurred.
+
+Publishing domains announce business events without requiring knowledge of downstream consumers.
+
+Typical characteristics include:
+
+- asynchronous communication
+- publisher independence
+- subscriber independence
+- eventual consistency
+- scalable collaboration
+
+Representative business events include:
+
+- Knowledge Accepted
+- Knowledge Processed
+- Knowledge Published
+- Knowledge Indexed
+- Knowledge Curated
+- Knowledge Delivered
+
+Domains publish events without assuming how many consumers will react to them.
+
+---
+
+### 9.6.6 Long-Running Workflows
+
+Certain enterprise processes require multiple domains to collaborate over an extended period.
+
+Rather than relying on a single synchronous interaction, these workflows are composed of multiple coordinated interactions.
+
+Typical long-running workflows include:
+
+- Knowledge Acquisition
+- Knowledge Processing
+- Knowledge Publication
+- Knowledge Discovery
+- Knowledge Improvement
+
+Each participating domain remains responsible only for its own business capability while orchestration coordinates the overall workflow.
+
+Long-running workflows should remain resilient to partial failures and support incremental progress without requiring tightly coupled execution.
+
+---
+
+### 9.6.7 Interaction Constraints
+
+Logical interactions throughout the platform follow several architectural constraints.
+
+#### Business Intent First
+
+Interactions represent business outcomes rather than technical operations.
+
+---
+
+#### Stable Collaboration Contracts
+
+Domains collaborate exclusively through published contracts.
+
+Internal implementations remain private.
+
+---
+
+#### Transport Independence
+
+Logical interactions remain independent of communication protocols, infrastructure platforms, and deployment technologies.
+
+---
+
+#### Repository-Centric Knowledge Access
+
+Published enterprise knowledge is accessed exclusively through the Knowledge Repository.
+
+Domains do not retrieve temporary processing artifacts.
+
+---
+
+#### Independent Domain Evolution
+
+Interaction contracts should remain sufficiently stable to allow domains to evolve independently.
+
+Implementation changes within one domain should not require changes across the entire platform.
+
+---
+
+#### Explicit Ownership
+
+Every interaction has a clearly identified owning domain responsible for its execution and business outcome.
+
+---
