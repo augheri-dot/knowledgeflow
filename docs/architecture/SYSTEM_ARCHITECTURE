@@ -681,3 +681,137 @@ The platform evolves by extending or improving individual domains without compro
 Architectural stability is achieved through clearly defined responsibilities and collaboration contracts rather than rigid implementations.
 
 ---
+
+## 9.4 Logical Domain Model
+
+The Logical Domain Model defines the primary architectural domains that collectively realize the Enterprise Knowledge Lifecycle.
+
+Each domain represents a distinct business capability with clearly defined ownership, responsibilities, and collaboration boundaries.
+
+Rather than operating as isolated components, domains collaborate through stable contracts while preserving loose coupling and high cohesion.
+
+The detailed responsibilities of each domain are documented in the Architecture Domain Catalog.
+
+This section focuses on the logical relationships between domains and the architectural rationale for their existence.
+
+---
+
+### 9.4.1 Domain Overview
+
+KnowledgeFlow is organized into nine primary architectural domains.
+
+| Domain | Primary Architectural Purpose |
+|--------|-------------------------------|
+| Knowledge Intake | Acquire knowledge from authoritative sources. |
+| Knowledge Orchestration | Coordinate enterprise knowledge workflows. |
+| Knowledge Processing | Transform raw knowledge into structured organizational assets. |
+| Knowledge Repository | Maintain the authoritative source of enterprise knowledge. |
+| Knowledge Discovery | Retrieve authoritative evidence relevant to user requests. |
+| Knowledge Intelligence | Transform retrieved evidence into explainable intelligence. |
+| Knowledge Delivery | Deliver trusted knowledge through multiple interaction channels. |
+| Knowledge Governance | Govern security, compliance, lineage, auditing, and operational policies. |
+| Shared Platform Services | Provide common platform capabilities shared across all domains. |
+
+---
+
+### 9.4.2 Domain Responsibilities
+
+Each domain owns a single business capability and is responsible for the complete lifecycle of that capability.
+
+Responsibilities are intentionally encapsulated within domain boundaries to minimize coupling and maximize maintainability.
+
+A domain may expose services to other domains but never exposes its internal implementation.
+
+Detailed functional responsibilities are maintained within the Architecture Domain Catalog.
+
+---
+
+### 9.4.3 Domain Ownership
+
+Each architectural domain has clear ownership.
+
+Ownership includes responsibility for:
+
+- Business capability
+- Internal implementation
+- Data consistency
+- Public contracts
+- Domain events
+- Operational quality
+- Continuous improvement
+
+Ownership remains independent of deployment topology or implementation technology.
+
+---
+
+### 9.4.4 Domain Boundaries
+
+Domain boundaries define the limits of architectural responsibility.
+
+Each domain should:
+
+- own its business capability;
+- expose only stable contracts;
+- avoid leaking internal implementation details;
+- remain independently evolvable;
+- collaborate through explicitly defined interactions.
+
+No domain should assume responsibilities owned by another domain.
+
+---
+
+### 9.4.5 Domain Dependencies
+
+Dependencies between domains are intentional and directional.
+
+Whenever possible:
+
+- upstream domains should remain unaware of downstream consumers;
+- downstream domains should consume published contracts rather than internal implementations;
+- asynchronous collaboration is preferred over direct runtime dependencies.
+
+This dependency model enables incremental evolution without widespread architectural impact.
+
+---
+
+### 9.4.6 Domain Interaction Philosophy
+
+The Logical Domain Model follows several architectural interaction principles.
+
+#### Single Architectural Purpose
+
+Every domain exists for exactly one architectural reason.
+
+Multiple responsibilities may exist within a domain, but all responsibilities must support the same architectural purpose.
+
+---
+
+#### Contract-Based Collaboration
+
+Domains collaborate through published contracts rather than implementation details.
+
+Contracts may include APIs, events, commands, queries, or other formally defined interfaces.
+
+---
+
+#### Repository-Centric Knowledge
+
+Published enterprise knowledge is accessed exclusively through the Knowledge Repository.
+
+Domains do not consume temporary processing artifacts.
+
+---
+
+#### Independent Evolution
+
+Domains evolve independently while preserving stable collaboration contracts.
+
+Architectural stability is achieved through clear ownership boundaries rather than rigid implementation dependencies.
+
+---
+
+#### Shared Platform Capabilities
+
+Common technical capabilities are provided by Shared Platform Services rather than duplicated across domains.
+
+Examples include authentication, messaging, configuration, monitoring, caching, and platform infrastructure services.
