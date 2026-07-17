@@ -1168,3 +1168,113 @@ Collaborates with:
 - Explainability by design.
 - Human-centric interaction.
 - Authorization-aware response delivery.
+
+---
+
+## 11. Shared Platform Services
+
+### Purpose
+
+The Shared Platform Services domain provides reusable technical capabilities that are consumed across multiple architecture domains.
+
+Unlike business domains, Shared Platform Services do not own business knowledge. Their responsibility is to provide standardized platform capabilities that reduce duplication, improve consistency, and enable enterprise-scale operations.
+
+Examples include authentication, configuration management, event messaging, caching, observability, secret management, and common infrastructure services.
+
+---
+
+### Responsibilities
+
+- Provide reusable platform capabilities.
+- Manage authentication and authorization.
+- Manage configuration and feature flags.
+- Provide centralized logging.
+- Provide monitoring and alerting.
+- Publish operational metrics.
+- Manage secrets securely.
+- Provide event messaging infrastructure.
+- Support distributed caching.
+- Expose shared APIs and SDKs.
+
+---
+
+### Inputs
+
+- Authentication requests.
+- Authorization policies.
+- Configuration requests.
+- Secret access requests.
+- Monitoring events.
+- Application logs.
+- Platform metrics.
+- Cache requests.
+- Infrastructure events.
+
+---
+
+### Outputs
+
+- Access tokens.
+- Authorization decisions.
+- Configuration values.
+- Retrieved secrets.
+- Operational dashboards.
+- Alert notifications.
+- Platform metrics.
+- Cached responses.
+- Event delivery.
+
+---
+
+### Core Components
+
+The Shared Platform Services domain includes:
+
+- Identity Provider
+- Authentication Service
+- Authorization Service
+- Configuration Service
+- Feature Flag Service
+- Secret Management
+- Event Bus
+- Distributed Cache
+- API Gateway
+- Notification Service
+- Monitoring Service
+- Logging Service
+- Metrics Collector
+
+---
+
+### Key Design Principles
+
+- Shared services never own business knowledge.
+- Services must remain reusable across all domains.
+- Authentication precedes authorization.
+- Configuration should be externalized.
+- Secrets must never be stored inside application code.
+- Platform services should be horizontally scalable.
+- Event infrastructure must remain domain-independent.
+- Platform services should support cloud-native deployment.
+
+---
+
+### Dependencies
+
+Consumed by:
+
+- Knowledge Acquisition
+- Knowledge Orchestration
+- Knowledge Processing
+- Knowledge Repository
+- Knowledge Discovery
+- Knowledge Intelligence
+- Knowledge Delivery
+- Platform Governance
+
+Depends on:
+
+- Cloud Infrastructure
+- Kubernetes / Container Platform
+- Identity Provider
+- Monitoring Stack
