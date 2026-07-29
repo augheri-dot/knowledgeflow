@@ -15,11 +15,11 @@ logger = logging.getLogger("KnowledgeFlow.Retrieval")
 
 COLLECTION_NAME = "eu_regulations_v1"
 EMBEDDING_MODEL = "text-embedding-3-small"
-CHAT_MODEL = "gpt-4o-mini"  # atau gpt-4o
+CHAT_MODEL = "gpt-4o-mini"
 
 def query_knowledgeflow(user_query: str, top_k: int = 5):
     logger.info(f"Received query: '{user_query}'")
-    
+
     load_dotenv()
     qdrant_url = os.getenv("QDRANT_URL", "http://localhost:6333")
     qdrant_key = os.getenv("QDRANT_API_KEY", None)
@@ -27,7 +27,7 @@ def query_knowledgeflow(user_query: str, top_k: int = 5):
 
     if not openai_key:
         logger.error("OPENAI_API_KEY is missing in .env configuration.")
-        sys.exit(1)
+        raise ValueError("OPENAI_API_KEY is missing in .env configuration.")
 
     # Initialize Clients
     qdrant = QdrantClient(url=qdrant_url, api_key=qdrant_key if qdrant_key else None)
@@ -40,9 +40,9 @@ def query_knowledgeflow(user_query: str, top_k: int = 5):
         model=EMBEDDING_MODEL
     ).data[0].embedding
 
-    # 2. Perform Semantic Search in Qdrant (Compatible with qdrant-client v1.10+)
+    # 2. Perform Semantic Search in Qdrant
     logger.info(f"Searching top {top_k} relevant legal context chunks in Qdrant...")
-    
+
     if hasattr(qdrant, "query_points"):
         response = qdrant.query_points(
             collection_name=COLLECTION_NAME,
@@ -57,15 +57,29 @@ def query_knowledgeflow(user_query: str, top_k: int = 5):
             limit=top_k
         )
 
-    # 3. Format Context for LLM
+    # 3. Format Context and Structured Sources
     context_blocks = []
     sources = []
     for hit in search_results:
         payload = hit.payload
-        score = getattr(hit, "score", 0.0)
-        ref = f"[{payload.get('document_title', 'EU Regulation')} | {payload.get('article_reference', 'General')} | Score: {score:.3f}]"
-        sources.append(ref)
-        context_blocks.append(f"--- SOURCE: {ref} ---\n{payload.get('content', '')}")
+        score = float(getattr(hit, "score", 0.0))
+        
+        doc_title = payload.get('document_title', 'EU Regulation')
+        article_ref = payload.get('article_reference', 'General')
+        content_snippet = payload.get('content', '')
+
+        # Construct structured citation dictionary for API response
+        sources.append({
+            "title": doc_title,
+            "celex_id": payload.get('celex_id', 'N/A'),
+            "doc_type": payload.get('doc_type', 'Regulation'),
+            "article": article_ref,
+            "score": round(score, 4),
+            "text_snippet": content_snippet[:300] + "..." if len(content_snippet) > 300 else content_snippet
+        })
+
+        ref_tag = f"[{doc_title} | {article_ref} | Score: {score:.3f}]"
+        context_blocks.append(f"--- SOURCE: {ref_tag} ---\n{content_snippet}")
 
     combined_context = "\n\n".join(context_blocks)
 
@@ -90,18 +104,14 @@ def query_knowledgeflow(user_query: str, top_k: int = 5):
 
     answer = response.choices[0].message.content
 
-    print("\n" + "="*80)
-    print("KNOWLEDGEFLOW LEGAL QUERY RESPONSE")
-    print("="*80)
-    print(f"\nQUERY: {user_query}\n")
-    print("RETRIEVED LEGAL SOURCES:")
-    for src in sources:
-        print(f" - {src}")
-    print("\nANSWER:")
-    print(answer)
-    print("="*80 + "\n")
+    # 5. Return Dictionary Output for FastAPI
+    return {
+        "query": user_query,
+        "answer": answer,
+        "sources": sources
+    }
 
 if __name__ == "__main__":
-    # Test query
     sample_query = "What are the transparency requirements for high-risk AI systems under the EU AI Act?"
-    query_knowledgeflow(sample_query)
+    res = query_knowledgeflow(sample_query)
+    print("\nANSWER:\n", res["answer"])
