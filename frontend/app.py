@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Bulletproof Text Sanitizer for Standard PDF Fonts (Helvetica / Latin-1)
+# Bulletproof Text Sanitizer for Standard PDF Fonts
 def sanitize_text(text: str) -> str:
     if not text:
         return ""
@@ -32,23 +32,22 @@ class KnowledgeFlowPDF(FPDF):
     def footer(self):
         self.set_y(-15)
         self.set_font("Helvetica", style="I", size=8)
-        self.set_text_color(100, 100, 100)  # Professional muted gray
+        self.set_text_color(100, 100, 100)
         
-        # Audit Trail Timestamp in UTC
         utc_now = datetime.now(timezone.utc).strftime("%d %b %Y, %H:%M:%S UTC")
-        footer_text = f"KnowledgeFlow Legal Audit Trail | Generated on: {utc_now} | Page {self.page_no()}/{{nb}}"
+        footer_text = f"KnowledgeFlow Legal Audit Trail | Generated on: {utc_now} | Page {self.page_no()}/{self.alias_nb_pages_default}"
         self.cell(0, 10, footer_text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
 
 # Exception-Safe PDF Generator Function
 def generate_pdf_report(messages):
     pdf = KnowledgeFlowPDF(orientation='P', unit='mm', format='A4')
-    pdf.alias_nb_pages()  # Enables dynamic {nb} total page count
+    pdf.alias_nb_pages()
     pdf.set_margins(15, 15, 15)
     pdf.set_auto_page_break(auto=True, margin=20)
     pdf.add_page()
     
     # Document Header
-    pdf.set_font("Helvetica", style="B", size=15)
+    pdf.set_font("Helvetica", style="B", size=14)
     pdf.cell(0, 8, "KnowledgeFlow | Compliance Audit Report", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
     pdf.set_font("Helvetica", size=9)
     pdf.cell(0, 5, "Automated EU Regulatory Provenance & Reasoning Engine", new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
@@ -66,7 +65,6 @@ def generate_pdf_report(messages):
         pdf.set_font("Helvetica", size=9)
         clean_content = sanitize_text(msg["content"])
         
-        # Line-by-line printing to handle long/unbroken text safely
         for line in clean_content.split('\n'):
             line = line.strip()
             if line:
@@ -98,52 +96,31 @@ def generate_pdf_report(messages):
     pdf_out = pdf.output()
     return bytes(pdf_out) if not isinstance(pdf_out, bytes) else pdf_out
 
-# High-Priority Custom CSS Injection
+# Professional Clean CSS (Balanced typography for Desktop/Cloud)
 st.markdown("""
 <style>
-    html, body, [class*="css"] {
-        font-size: 18px !important;
-    }
-    .stChatMessage p, .stChatMessage li, .stChatMessage div {
-        font-size: 1.15rem !important;
-        line-height: 1.7 !important;
-        color: #111827 !important;
-    }
-    section[data-testid="stSidebar"] p, 
-    section[data-testid="stSidebar"] li,
-    section[data-testid="stSidebar"] span {
-        font-size: 1.05rem !important;
-    }
-    .stExpander div[data-testid="stMarkdownContainer"] p {
-        font-size: 1.05rem !important;
+    .stChatMessage p, .stChatMessage li {
+        font-size: 0.95rem !important;
         line-height: 1.6 !important;
     }
-    .stChatInput textarea {
-        font-size: 1.1rem !important;
+    .stExpander div[data-testid="stMarkdownContainer"] p {
+        font-size: 0.88rem !important;
+        line-height: 1.5 !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Main Application Header
-st.markdown(
-    """
-    <h1 style='margin-bottom: 0px;'>KnowledgeFlow | Automated EU Compliance Assistant</h1>
-    <p style='font-size: 1.15rem; font-weight: 500; color: #333333; margin-top: 8px; margin-bottom: 24px;'>
-        Empowering institutional compliance with automated regulatory retrieval and verifiable legal provenance across EU digital frameworks.
-    </p>
-    """, 
-    unsafe_allow_html=True
-)
+st.title("KnowledgeFlow | Automated EU Compliance Assistant")
+st.caption("Empowering institutional compliance with automated regulatory retrieval and verifiable legal provenance across EU digital frameworks.")
 
-# --- SIDEBAR LAYOUT (OPTIMIZED UX) ---
-
-# 1. Action Section: Export Report (Top Priority)
-st.sidebar.markdown("### 📥 Export Discussion")
+# Sidebar Layout
+st.sidebar.markdown("### Export Discussion")
 if "messages" in st.session_state and st.session_state.messages:
     try:
         pdf_bytes = generate_pdf_report(st.session_state.messages)
         st.sidebar.download_button(
-            label="📄 Export Report to PDF",
+            label="Export Report to PDF",
             data=pdf_bytes,
             file_name="KnowledgeFlow_Compliance_Report.pdf",
             mime="application/pdf"
@@ -155,7 +132,6 @@ else:
 
 st.sidebar.divider()
 
-# 2. Controls Section: Retrieval Settings (Middle - Clean layout)
 st.sidebar.markdown("### Retrieval Settings")
 legal_citations_count = st.sidebar.slider(
     "Legal Citations Count", 
@@ -166,34 +142,30 @@ legal_citations_count = st.sidebar.slider(
 
 st.sidebar.divider()
 
-# 3. Information Section: System Status & Covered Frameworks (Bottom)
 st.sidebar.markdown("**System Status:** :green[Connected]")
-st.sidebar.markdown("### 📜 Covered Frameworks")
+st.sidebar.markdown("### Covered Frameworks")
 st.sidebar.markdown("""
 * **EU AI Act**
 * **GDPR** *(General Data Protection Regulation)*
 * **Data Act**
 * **Digital Services Act (DSA)**
 * **Data Governance Act (DGA)**
-* **Custom Institutional Standards**
 """)
 
 st.sidebar.divider()
-st.sidebar.caption("Developed by KnowledgeFlow Enterprise Team © 2026")
+st.sidebar.caption("KnowledgeFlow Enterprise Platform © 2026")
 
-# --- CHAT ENGINE & MAIN INTERFACE ---
-
+# Chat Engine Interface
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display Chat History
 for idx, message in enumerate(st.session_state.messages):
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
         
         sources = message.get("sources") or []
         if message["role"] == "assistant" and sources:
-            with st.expander("🔻 View Legal Context & Paragraph References"):
+            with st.expander("View Legal Context & Paragraph References"):
                 for src in sources:
                     if not isinstance(src, dict):
                         continue
@@ -221,7 +193,6 @@ for idx, message in enumerate(st.session_state.messages):
             if feedback is not None:
                 st.toast("Thank you for your feedback!", icon="👍" if feedback == 1 else "👎")
 
-# User Query Processing
 if user_query := st.chat_input("Ask about EU digital regulations, compliance mandates, or legal provisions..."):
     st.session_state.messages.append({"role": "user", "content": user_query})
     with st.chat_message("user"):
