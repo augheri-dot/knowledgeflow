@@ -35,7 +35,8 @@ class KnowledgeFlowPDF(FPDF):
         self.set_text_color(100, 100, 100)
         
         utc_now = datetime.now(timezone.utc).strftime("%d %b %Y, %H:%M:%S UTC")
-        footer_text = f"KnowledgeFlow Legal Audit Trail | Generated on: {utc_now} | Page {self.page_no()}/{self.alias_nb_pages_default}"
+        # Fixed formatting for dynamic total page count substitution
+        footer_text = f"KnowledgeFlow Legal Audit Trail | Generated on: {utc_now} | Page {self.page_no()}/" + "%s" % self.alias_nb_pages_default
         self.cell(0, 10, footer_text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
 
 # Exception-Safe PDF Generator Function
@@ -96,7 +97,7 @@ def generate_pdf_report(messages):
     pdf_out = pdf.output()
     return bytes(pdf_out) if not isinstance(pdf_out, bytes) else pdf_out
 
-# Professional Clean CSS (Balanced typography for Desktop/Cloud)
+# Global Typography CSS
 st.markdown("""
 <style>
     .stChatMessage p, .stChatMessage li {
@@ -110,9 +111,20 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Main Application Header
-st.title("KnowledgeFlow | Automated EU Compliance Assistant")
-st.caption("Empowering institutional compliance with automated regulatory retrieval and verifiable legal provenance across EU digital frameworks.")
+# Precision Header Layout (HTML-driven for exact font scaling)
+st.markdown(
+    """
+    <div style='margin-bottom: 20px;'>
+        <h2 style='font-size: 1.65rem; font-weight: 700; color: #111827; margin: 0; padding: 0;'>
+            KnowledgeFlow | Automated EU Compliance Assistant
+        </h2>
+        <p style='font-size: 0.95rem; color: #4B5563; margin-top: 6px; margin-bottom: 0;'>
+            Empowering institutional compliance with automated regulatory retrieval and verifiable legal provenance across EU digital frameworks.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Sidebar Layout
 st.sidebar.markdown("### Export Discussion")
