@@ -35,7 +35,6 @@ class KnowledgeFlowPDF(FPDF):
         self.set_text_color(100, 100, 100)
         
         utc_now = datetime.now(timezone.utc).strftime("%d %b %Y, %H:%M:%S UTC")
-        # Pure string placeholder for total pages in FPDF2
         footer_text = f"KnowledgeFlow Legal Audit Trail | Generated on: {utc_now} | Page {self.page_no()}/{{nb}}"
         self.cell(0, 10, footer_text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
 
@@ -63,7 +62,7 @@ def generate_pdf_report(messages):
         pdf.cell(0, 6, f"[{role_label}]", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         pdf.ln(1)
         
-        pdf.set_font("Helvetica", size=9)
+        pdf.set_font("Helvetica", style="B", size=9)
         clean_content = sanitize_text(msg["content"])
         
         for line in clean_content.split('\n'):
@@ -97,9 +96,31 @@ def generate_pdf_report(messages):
     pdf_out = pdf.output()
     return bytes(pdf_out) if not isinstance(pdf_out, bytes) else pdf_out
 
-# Global Typography CSS
+# Precision CSS Injection (Align Main Header with Sidebar & Compact Sidebar Margins)
 st.markdown("""
 <style>
+    /* Remove top whitespace on Main Container to align title with Sidebar */
+    .main .block-container {
+        padding-top: 1.8rem !important;
+        padding-bottom: 2rem !important;
+    }
+    
+    /* Remove extra padding on top of Sidebar */
+    [data-testid="stSidebarUserContent"] {
+        padding-top: 1.8rem !important;
+    }
+
+    /* Reduce vertical spacing between sidebar elements and dividers */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div {
+        margin-bottom: -0.35rem !important;
+    }
+    
+    [data-testid="stSidebar"] hr {
+        margin-top: 0.8rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+
+    /* Message & Text Formatting */
     .stChatMessage p, .stChatMessage li {
         font-size: 0.95rem !important;
         line-height: 1.6 !important;
@@ -111,11 +132,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Precision Header Layout (HTML-driven for exact font scaling)
+# Precision Header Layout (HTML-driven for exact font scaling and top alignment)
 st.markdown(
     """
     <div style='margin-bottom: 20px;'>
-        <h2 style='font-size: 1.65rem; font-weight: 700; color: #111827; margin: 0; padding: 0;'>
+        <h2 style='font-size: 1.65rem; font-weight: 700; color: #111827; margin: 0; padding: 0; line-height: 1.2;'>
             KnowledgeFlow | Automated EU Compliance Assistant
         </h2>
         <p style='font-size: 0.95rem; color: #4B5563; margin-top: 6px; margin-bottom: 0;'>
@@ -132,7 +153,7 @@ if "messages" in st.session_state and st.session_state.messages:
     try:
         pdf_bytes = generate_pdf_report(st.session_state.messages)
         st.sidebar.download_button(
-            label="Export Report to PDF",
+            label="📥 Export Report to PDF",
             data=pdf_bytes,
             file_name="KnowledgeFlow_Compliance_Report.pdf",
             mime="application/pdf"
