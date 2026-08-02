@@ -38,7 +38,7 @@ class KnowledgeFlowPDF(FPDF):
         footer_text = f"KnowledgeFlow Legal Audit Trail | Generated on: {utc_now} | Page {self.page_no()}/{{nb}}"
         self.cell(0, 10, footer_text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
 
-# Exception-Safe PDF Generator Function
+# Exception-Safe & Perfectly Formatted PDF Generator
 def generate_pdf_report(messages):
     pdf = KnowledgeFlowPDF(orientation='P', unit='mm', format='A4')
     pdf.alias_nb_pages()
@@ -58,28 +58,46 @@ def generate_pdf_report(messages):
     # Process Chat History
     for msg in messages:
         role_label = "USER QUERY" if msg["role"] == "user" else "ASSISTANT ANALYSIS"
+        
+        # Section Header (Bold Label)
         pdf.set_font("Helvetica", style="B", size=10)
+        pdf.set_text_color(17, 24, 39)
         pdf.cell(0, 6, f"[{role_label}]", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         pdf.ln(1)
         
-        pdf.set_font("Helvetica", style="B", size=9)
-        clean_content = sanitize_text(msg["content"])
+        # Prepare Clean Body Content
+        raw_content = msg.get("content", "")
+        clean_content = raw_content.replace("**", "")
+        clean_content = sanitize_text(clean_content)
         
-        for line in clean_content.split('\n'):
-            line = line.strip()
-            if line:
+        if msg["role"] == "user":
+            # Flow user query smoothly as a single continuous paragraph with regular font
+            pdf.set_font("Helvetica", style="", size=9)
+            pdf.set_text_color(51, 51, 51)
+            single_line_query = " ".join(clean_content.split())
+            pdf.multi_cell(0, 5, single_line_query, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        else:
+            # Format assistant analysis paragraphs gracefully
+            paragraphs = [p.strip() for p in clean_content.split('\n') if p.strip()]
+            for p_str in paragraphs:
+                pdf.set_font("Helvetica", style="", size=9)
+                pdf.set_text_color(51, 51, 51)
                 try:
-                    pdf.multi_cell(0, 5, line, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                    pdf.multi_cell(0, 5, p_str, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
                 except Exception:
-                    pdf.multi_cell(0, 5, line[:200], new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                    pdf.multi_cell(0, 5, p_str[:200], new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+                pdf.ln(1.5)
         pdf.ln(3)
         
         # Sources & Citations Section
         sources = msg.get("sources") or []
         if msg["role"] == "assistant" and sources:
-            pdf.set_font("Helvetica", style="BI", size=9)
+            pdf.set_font("Helvetica", style="B", size=9)
+            pdf.set_text_color(17, 24, 39)
             pdf.cell(0, 5, "Retrieved Legal References & Provenance:", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-            pdf.set_font("Helvetica", size=8)
+            pdf.set_font("Helvetica", style="", size=8)
+            pdf.set_text_color(75, 85, 99)
+            
             for src in sources:
                 if isinstance(src, dict):
                     title = src.get("title", "EU Regulation")
@@ -96,21 +114,18 @@ def generate_pdf_report(messages):
     pdf_out = pdf.output()
     return bytes(pdf_out) if not isinstance(pdf_out, bytes) else pdf_out
 
-# Precision CSS Injection (Align Main Header with Sidebar & Compact Sidebar Margins)
+# Precision CSS Injection
 st.markdown("""
 <style>
-    /* Remove top whitespace on Main Container to align title with Sidebar */
     .main .block-container {
         padding-top: 1.8rem !important;
         padding-bottom: 2rem !important;
     }
     
-    /* Remove extra padding on top of Sidebar */
     [data-testid="stSidebarUserContent"] {
         padding-top: 1.8rem !important;
     }
 
-    /* Reduce vertical spacing between sidebar elements and dividers */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div {
         margin-bottom: -0.35rem !important;
     }
@@ -120,7 +135,6 @@ st.markdown("""
         margin-bottom: 0.8rem !important;
     }
 
-    /* Message & Text Formatting */
     .stChatMessage p, .stChatMessage li {
         font-size: 0.95rem !important;
         line-height: 1.6 !important;
@@ -132,7 +146,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Precision Header Layout (HTML-driven for exact font scaling and top alignment)
+# Main Application Header
 st.markdown(
     """
     <div style='margin-bottom: 20px;'>
