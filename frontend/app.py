@@ -35,8 +35,8 @@ class KnowledgeFlowPDF(FPDF):
         self.set_text_color(100, 100, 100)
         
         utc_now = datetime.now(timezone.utc).strftime("%d %b %Y, %H:%M:%S UTC")
-        # Fixed formatting for dynamic total page count substitution
-        footer_text = f"KnowledgeFlow Legal Audit Trail | Generated on: {utc_now} | Page {self.page_no()}/" + "%s" % self.alias_nb_pages_default
+        # Pure string placeholder for total pages in FPDF2
+        footer_text = f"KnowledgeFlow Legal Audit Trail | Generated on: {utc_now} | Page {self.page_no()}/{{nb}}"
         self.cell(0, 10, footer_text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align="C")
 
 # Exception-Safe PDF Generator Function
