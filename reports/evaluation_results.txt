@@ -1,0 +1,9 @@
+
+==================================================
+KNOWLEDGEFLOW HYBRID RAG EVALUATION REPORT
+==================================================
+Target Collection  : eu_regulations_v1
+Total Test Queries : 30
+Hit Rate @ top_k   : 1.0000 (100.00%)
+MRR (Rank Score)   : 0.9833
+==================================================
