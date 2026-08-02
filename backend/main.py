@@ -1,28 +1,55 @@
-import os
-import sys
 import logging
-from typing import List, Optional
-from fastapi import FastAPI, HTTPException, status
+import sqlite3
+import os
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-
-# Append root directory to sys.path to ensure proper module imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from typing import Optional, List, Dict, Any
 
 from backend.retrieval.query_engine import query_knowledgeflow
 
-# Logging Configuration
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger("KnowledgeFlow-API")
+# Configure structured logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] [%(levelname)s] %(message)s"
+)
+logger = logging.getLogger("KnowledgeFlow.Main")
 
-# Initialize FastAPI Application
+# Database Path Configuration
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_DIR = os.path.join(BASE_DIR, "data")
+DB_PATH = os.path.join(DB_DIR, "feedback.db")
+
+def init_db():
+    """Ensure data directory and feedback table exist."""
+    try:
+        os.makedirs(DB_DIR, exist_ok=True)
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS user_feedback (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                query TEXT NOT NULL,
+                answer TEXT NOT NULL,
+                feedback_type TEXT NOT NULL,
+                comment TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+        conn.close()
+        logger.info(f"Database initialized successfully at {DB_PATH}")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+
+init_db()
+
 app = FastAPI(
-    title="KnowledgeFlow Enterprise RAG API",
-    description="REST API Service for Legal & Regulatory Intelligence Pipeline (EU-Lex)",
-    version="1.0.0"
+    title="KnowledgeFlow Regulatory Intelligence API",
+    version="1.0.0",
+    description="Enterprise API for EU Regulations Retrieval and Analysis"
 )
 
-# CORS Configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -31,97 +58,51 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Pydantic Data Models (Request & Response Schemas) ---
-
 class QueryRequest(BaseModel):
-    query: str = Field(
-        ..., 
-        description="Query regarding EU regulations (e.g., EU AI Act, GDPR, Data Act)", 
-        example="What are the high-risk AI requirements under the EU AI Act?"
-    )
-    top_k: Optional[int] = Field(
-        default=5, 
-        description="Number of reference documents to retrieve", 
-        example=5
-    )
+    query: str = Field(..., min_length=1, description="User legal query string")
+    top_k: Optional[int] = Field(default=5, ge=1, le=20, description="Number of context passages to retrieve")
 
-class SourceCitation(BaseModel):
-    title: str
-    celex_id: str
-    doc_type: str
-    article: str
-    score: float
-    text_snippet: str
-
-class QueryResponse(BaseModel):
+class FeedbackRequest(BaseModel):
     query: str
     answer: str
-    sources: List[SourceCitation]
+    feedback_type: str = Field(..., description="'thumbs_up' or 'thumbs_down'")
+    comment: Optional[str] = None
 
-class HealthResponse(BaseModel):
-    status: str
-    engine_ready: bool
-    version: str
+@app.get("/")
+def read_root():
+    return {
+        "status": "online",
+        "service": "KnowledgeFlow Regulatory Intelligence API",
+        "version": "1.0.0"
+    }
 
-# --- API Endpoints ---
-
-@app.get("/health", response_model=HealthResponse, tags=["System"])
+@app.get("/health")
 def health_check():
-    """
-    Check server health status and Query Engine readiness.
-    """
-    return HealthResponse(
-        status="healthy",
-        engine_ready=True,
-        version="1.0.0"
-    )
+    return {"status": "healthy"}
 
-@app.post("/api/v1/query", response_model=QueryResponse, tags=["RAG Retrieval"])
-def query_knowledgebase(request: QueryRequest):
-    """
-    Primary RAG Retrieval endpoint for submitting regulatory and legal queries.
-    """
-    if not request.query.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Query text cannot be empty."
-        )
-    
+@app.post("/api/query")
+def handle_query(request: QueryRequest):
     try:
-        # Execute RAG Query Function
-        result = query_knowledgeflow(
-            user_query=request.query,
-            top_k=request.top_k
-        )
-        
-        # Format source citations
-        formatted_sources = []
-        for src in result.get("sources", []):
-            formatted_sources.append(
-                SourceCitation(
-                    title=src.get("title", "Unknown Document"),
-                    celex_id=src.get("celex_id", "N/A"),
-                    doc_type=src.get("doc_type", "N/A"),
-                    article=src.get("article", "General"),
-                    score=float(src.get("score", 0.0)),
-                    text_snippet=src.get("text_snippet", "")
-                )
-            )
-            
-        return QueryResponse(
-            query=result.get("query", request.query),
-            answer=result.get("answer", "No answer generated."),
-            sources=formatted_sources
-        )
-        
+        logger.info(f"Received query request: '{request.query}' (top_k={request.top_k})")
+        result = query_knowledgeflow(user_query=request.query, top_k=request.top_k)
+        return result
     except Exception as e:
-        logger.error(f"Error processing query: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred while processing the RAG query: {str(e)}"
-        )
+        logger.error(f"Error processing query request: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
-if __name__ == "__main__":
-    import uvicorn
-    # Execute ASGI server on port 8000
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
+@app.post("/api/feedback")
+def submit_feedback(request: FeedbackRequest):
+    try:
+        logger.info(f"Received feedback '{request.feedback_type}' for query: '{request.query[:30]}...'")
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO user_feedback (query, answer, feedback_type, comment) VALUES (?, ?, ?, ?)",
+            (request.query, request.answer, request.feedback_type, request.comment or "")
+        )
+        conn.commit()
+        conn.close()
+        return {"status": "success", "message": "Feedback recorded successfully."}
+    except Exception as e:
+        logger.error(f"Error saving feedback: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to record feedback: {str(e)}")

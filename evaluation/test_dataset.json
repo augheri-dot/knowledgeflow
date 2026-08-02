@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What restrictions apply when processing personal data under the EU Data Act?",
+    "expected_celex": ["32016R0679", "32023R2854"]
+  },
+  {
+    "question": "What are the mandatory risk management requirements for high-risk AI systems?",
+    "expected_celex": ["32024R1689"]
+  },
+  {
+    "question": "How does Article 89 of GDPR handle personal data processing for research purposes?",
+    "expected_celex": ["32016R0679"]
+  },
+  {
+    "question": "What obligations apply to data sharing intermediaries under the EU Data Act?",
+    "expected_celex": ["32023R2854"]
+  },
+  {
+    "question": "What is the scope of Article 2 regarding GDPR restrictions and fundamental rights?",
+    "expected_celex": ["32016R0679"]
+  }
+]

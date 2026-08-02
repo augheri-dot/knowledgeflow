@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+qdrant-client
+openai
+python-dotenv
+streamlit
+requests
+ftfy
+pydantic
+beautifulsoup4
+pypdf
+azure-storage-blob
+sentence-transformers
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch

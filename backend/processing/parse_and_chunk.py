@@ -1,12 +1,12 @@
 import os
-import re
 import sys
+import re
 import json
 import logging
-from io import BytesIO
-from bs4 import BeautifulSoup
-from pypdf import PdfReader
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
+import pypdf
+from io import BytesIO
 from azure.storage.blob import BlobServiceClient
 
 # Configure clean enterprise logging
@@ -17,59 +17,66 @@ logging.basicConfig(
 )
 logger = logging.getLogger("KnowledgeFlow.Processing")
 
-# Suppress internal Azure logs
+# Suppress verbose internal logging
 logging.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(logging.WARNING)
 logging.getLogger("azure.storage.blob").setLevel(logging.WARNING)
 
-def extract_text_from_pdf(pdf_bytes: bytes) -> str:
-    """Extracts raw plain text from PDF stream using PyPDF."""
-    reader = PdfReader(BytesIO(pdf_bytes))
-    extracted_text = []
-    for page in reader.pages:
-        text = page.extract_text()
-        if text:
-            extracted_text.append(text)
-    return "\n".join(extracted_text)
+load_dotenv()
 
-def extract_text_from_html(html_bytes: bytes) -> str:
-    """Extracts clean readable text from HTML stream using BeautifulSoup."""
-    soup = BeautifulSoup(html_bytes, "html.parser")
-    for element in soup(["script", "style", "head", "footer"]):
-        element.decompose()
-    return soup.get_text(separator="\n")
+def extract_text_from_html(content_bytes: bytes) -> str:
+    soup = BeautifulSoup(content_bytes, "html.parser")
+    
+    # Remove script and style elements
+    for script in soup(["script", "style"]):
+        script.decompose()
+        
+    # Replace block elements with clear newline breaks for article splitting
+    for element in soup.find_all(['p', 'div', 'h1', 'h2', 'h3', 'tr', 'li']):
+        element.insert_before('\n')
+        element.insert_after('\n')
+        
+    text = soup.get_text(separator=" ")
+    # Clean up excess blank lines while preserving paragraph boundaries
+    cleaned_lines = [re.sub(r'\s+', ' ', line).strip() for line in text.splitlines()]
+    return "\n".join([line for line in cleaned_lines if line])
+
+def extract_text_from_pdf(content_bytes: bytes) -> str:
+    pdf_file = BytesIO(content_bytes)
+    reader = pypdf.PdfReader(pdf_file)
+    text = ""
+    for page in reader.pages:
+        extracted = page.extract_text()
+        if extracted:
+            text += extracted + "\n"
+    return text
+
+def extract_celex_from_filename(filename: str) -> str:
+    # Match standard EU CELEX pattern (e.g., 32016R0679, 32024R1689, 32022R2065) even with underscores
+    match = re.search(r'(3\d{4}[A-Za-z]\d{4})', filename)
+    if match:
+        return match.group(1).upper()
+    return "UNKNOWN_CELEX"
 
 def structural_article_chunking(raw_text: str, doc_metadata: dict) -> list[dict]:
-    """
-    Performs robust structural legal chunking.
-    Handles 'Article/ARTICLE', 'Chapter/CHAPTER', and falls back to character windowing if needed.
-    """
-    # Regex matching variations: 'Article 1', 'ARTICLE 1', 'Article 1a', 'Chapter I'
-    article_pattern = re.compile(r'(?=\b(?:Article|ARTICLE|Chapter|CHAPTER)\s+\d+[a-zA-Z]?\b)', re.MULTILINE)
-    
-    raw_splits = article_pattern.split(raw_text)
-    
-    # Fallback to paragraph splitting if article regex failed to split the document
-    if len(raw_splits) <= 2:
-        logger.info(f"Explicit article pattern low match for '{doc_metadata['document_title']}'. Applying Smart Paragraph Chunking fallback...")
-        raw_splits = raw_text.split("\n\n")
-
     chunks = []
-    chunk_index = 0
-    current_buffer = ""
-
-    for block in raw_splits:
+    # Split text into sections by "Article" boundary
+    article_blocks = re.split(r'\n(?=Article\s+\d+)', raw_text, flags=re.IGNORECASE)
+    
+    chunk_index = 1
+    for block in article_blocks:
         block_cleaned = block.strip()
-        if not block_cleaned or len(block_cleaned) < 30:
+        if not block_cleaned:
             continue
-
-        # Extract specific header if match found
-        header_match = re.search(r'\b(?:Article|ARTICLE|Chapter|CHAPTER)\s+\d+[a-zA-Z]?\b', block_cleaned)
-        article_ref = header_match.group(0) if header_match else "General/Recital"
-
-        # Manage chunk size (~1200 - 1500 chars ideal for embedding models)
-        if len(block_cleaned) > 1800:
-            sub_paragraphs = block_cleaned.split("\n")
-            for p in sub_paragraphs:
+            
+        # Extract Article Title/Number
+        art_match = re.search(r'^(Article\s+\d+)', block_cleaned, re.IGNORECASE)
+        article_ref = art_match.group(1).title() if art_match else "General / Recital"
+        
+        # If block is too large, split into sub-chunks
+        if len(block_cleaned) > 1500:
+            paragraphs = block_cleaned.split("\n")
+            current_buffer = ""
+            for p in paragraphs:
                 p_clean = p.strip()
                 if not p_clean:
                     continue
@@ -87,7 +94,6 @@ def structural_article_chunking(raw_text: str, doc_metadata: dict) -> list[dict]
                         })
                         chunk_index += 1
                     current_buffer = p_clean + " "
-            
             if current_buffer.strip():
                 chunks.append({
                     "chunk_id": f"{doc_metadata['celex_id']}_chunk_{chunk_index}",
@@ -98,7 +104,6 @@ def structural_article_chunking(raw_text: str, doc_metadata: dict) -> list[dict]
                     "char_count": len(current_buffer.strip())
                 })
                 chunk_index += 1
-                current_buffer = ""
         else:
             chunks.append({
                 "chunk_id": f"{doc_metadata['celex_id']}_chunk_{chunk_index}",
@@ -112,72 +117,71 @@ def structural_article_chunking(raw_text: str, doc_metadata: dict) -> list[dict]
 
     return chunks
 
-def process_and_chunk_documents():
+def main():
     logger.info("Starting KnowledgeFlow Document Processing & Chunking Pipeline...")
     
-    load_dotenv()
     connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-    raw_container = os.getenv("AZURE_CONTAINER_NAME", "raw-eu-regulations")
-    processed_container = "processed-chunks"
+    raw_container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME", "raw-eu-regulations").strip('"\' ').lower().replace('_', '-')
+    processed_container_name = os.getenv("AZURE_PROCESSED_CONTAINER_NAME", "processed-chunks").strip('"\' ').lower().replace('_', '-')
 
     if not connection_string:
-        logger.error("AZURE_STORAGE_CONNECTION_STRING is missing in .env configuration.")
+        logger.error("Missing AZURE_STORAGE_CONNECTION_STRING in .env")
         sys.exit(1)
+
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    raw_client = blob_service_client.get_container_client(raw_container_name)
+    processed_client = blob_service_client.get_container_client(processed_container_name)
 
     try:
-        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-        raw_client = blob_service_client.get_container_client(raw_container)
-        
-        processed_client = blob_service_client.get_container_client(processed_container)
         if not processed_client.exists():
-            logger.info(f"Creating container '{processed_container}' in Azure Storage...")
             processed_client.create_container()
-
-        blobs = list(raw_client.list_blobs())
-        logger.info(f"Found {len(blobs)} raw document(s) in Azure Blob container '{raw_container}'.")
-
-        total_chunks_created = 0
-
-        for blob in blobs:
-            blob_name = blob.name
-            logger.info(f"Processing raw document: '{blob_name}'...")
-            
-            blob_client = raw_client.get_blob_client(blob_name)
-            blob_data = blob_client.download_blob().readall()
-            
-            blob_properties = blob_client.get_blob_properties()
-            metadata = blob_properties.metadata or {}
-            
-            celex_id = metadata.get("celex_id", "UNKNOWN_CELEX")
-            title = metadata.get("document_title", blob_name.split("/")[-1].split(".")[0])
-
-            if blob_name.endswith(".pdf"):
-                raw_text = extract_text_from_pdf(blob_data)
-            elif blob_name.endswith(".html") or blob_name.endswith(".xhtml"):
-                raw_text = extract_text_from_html(blob_data)
-            else:
-                logger.warning(f"Unsupported format for blob '{blob_name}'. Skipping...")
-                continue
-
-            doc_meta = {"celex_id": celex_id, "document_title": title}
-            
-            chunks = structural_article_chunking(raw_text, doc_meta)
-            logger.info(f"Generated {len(chunks)} structural chunks for '{title}'.")
-
-            output_blob_name = f"processed/{title}_{celex_id}_chunks.json"
-            output_client = processed_client.get_blob_client(output_blob_name)
-            
-            json_payload = json.dumps(chunks, indent=2, ensure_ascii=False)
-            output_client.upload_blob(json_payload.encode('utf-8'), overwrite=True)
-            
-            logger.info(f"Successfully saved chunks JSON to '{processed_container}/{output_blob_name}'.")
-            total_chunks_created += len(chunks)
-
-        logger.info(f"Processing Pipeline Summary: Successfully generated and stored {total_chunks_created} total chunks.")
-
     except Exception as e:
-        logger.error(f"Processing pipeline failed with exception: {str(e)}")
-        sys.exit(1)
+        logger.warning(f"Container check warning: {e}")
+
+    blobs = list(raw_client.list_blobs())
+    logger.info(f"Found {len(blobs)} raw document(s) in Azure Blob container '{raw_container_name}'.")
+
+    total_chunks = 0
+    for blob in blobs:
+        blob_name = blob.name
+        base_name = os.path.basename(blob_name)
+        if not base_name:
+            continue
+            
+        logger.info(f"Processing raw document: '{blob_name}'...")
+        blob_client = raw_client.get_blob_client(blob_name)
+        blob_data = blob_client.download_blob().readall()
+
+        blob_properties = blob_client.get_blob_properties()
+        metadata = blob_properties.metadata or {}
+
+        # Extract CELEX ID: Metadata -> RegEx from Filename
+        celex_id = metadata.get("celex_id")
+        if not celex_id or celex_id == "UNKNOWN_CELEX":
+            celex_id = extract_celex_from_filename(base_name)
+
+        clean_title = base_name.split(".")[0]
+        if blob_name.endswith(".pdf"):
+            raw_text = extract_text_from_pdf(blob_data)
+        elif blob_name.endswith(".html") or blob_name.endswith(".xhtml"):
+            raw_text = extract_text_from_html(blob_data)
+        else:
+            logger.warning(f"Unsupported format for blob '{blob_name}'. Skipping...")
+            continue
+
+        doc_meta = {"celex_id": celex_id, "document_title": clean_title}
+        chunks = structural_article_chunking(raw_text, doc_meta)
+        
+        logger.info(f"Generated {len(chunks)} structural chunks for '{clean_title}' (CELEX: {celex_id}).")
+
+        output_blob_name = f"processed/{clean_title}_chunks.json"
+        output_client = processed_client.get_blob_client(output_blob_name)
+
+        json_payload = json.dumps(chunks, indent=2, ensure_ascii=False)
+        output_client.upload_blob(json_payload.encode('utf-8'), overwrite=True)
+        total_chunks += len(chunks)
+
+    logger.info(f"Processing Pipeline Summary: Successfully generated and stored {total_chunks} total chunks.")
 
 if __name__ == "__main__":
-    process_and_chunk_documents()
+    main()
