@@ -2,23 +2,27 @@ import os
 import sys
 import json
 import logging
+from typing import List, Dict, Any
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from openai import OpenAI
 from stopwordsiso import stopwords
 from langdetect import detect
+from sentence_transformers import CrossEncoder
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("KnowledgeFlow.Eval")
 
 load_dotenv()
 
-# Dynamic Environment Configuration
+# Dynamic Environment Configurations
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))
 COLLECTION_NAME = os.getenv("QDRANT_COLLECTION_NAME", "eu_regulations_v1")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+PAYLOAD_TEXT_KEY = os.getenv("QDRANT_PAYLOAD_TEXT_KEY", "content")
+RERANKER_MODEL_NAME = os.getenv("RERANKER_MODEL_NAME", "cross-encoder/ms-marco-MiniLM-L-6-v2")
 
 dataset_path = os.path.join(os.path.dirname(__file__), "test_dataset.json")
 
@@ -30,23 +34,37 @@ else:
     logger.error(f"Dataset file {dataset_path} not found!")
     sys.exit(1)
 
-def extract_meaningful_keywords(query_text: str, max_keywords: int = 5):
+# Lazy initialization for Cross-Encoder model
+_RERANKER_INSTANCE = None
+
+def get_reranker_model() -> CrossEncoder:
+    global _RERANKER_INSTANCE
+    if _RERANKER_INSTANCE is None:
+        logger.info(f"Initializing Cross-Encoder Reranker model [{RERANKER_MODEL_NAME}]...")
+        _RERANKER_INSTANCE = CrossEncoder(RERANKER_MODEL_NAME)
+    return _RERANKER_INSTANCE
+
+def extract_meaningful_keywords(query_text: str, max_keywords: int = 5) -> List[str]:
     """Dynamically detects query language and filters out stopwords without hardcoding."""
     raw_words = [w.strip("?,.:;\"'()[]{}").lower() for w in query_text.split()]
-    
     try:
-        # Automatically detect language (e.g., 'en', 'id', 'es', 'fr', 'de')
         detected_lang = detect(query_text)
         dynamic_stopwords = stopwords(detected_lang)
     except Exception:
         dynamic_stopwords = set()
 
-    # Filter out stopwords and short punctuation noise
     meaningful = [w for w in raw_words if len(w) > 2 and w not in dynamic_stopwords]
     return meaningful[:max_keywords] if meaningful else raw_words[:max_keywords]
 
-def hybrid_search(qdrant: QdrantClient, openai_client: OpenAI, query_text: str, top_k: int = 5):
-    # 1. Dense Vector Search
+def hybrid_search_with_rerank(
+    qdrant: QdrantClient, 
+    openai_client: OpenAI, 
+    query_text: str, 
+    top_k: int = 5
+) -> List[Dict[str, Any]]:
+    # -------------------------------------------------------------
+    # PHASE 1: RETRIEVAL (Fetch Top 20 Candidates using Dense + Lexical RRF)
+    # -------------------------------------------------------------
     res = openai_client.embeddings.create(input=query_text, model=EMBEDDING_MODEL)
     query_vector = res.data[0].embedding
 
@@ -61,14 +79,12 @@ def hybrid_search(qdrant: QdrantClient, openai_client: OpenAI, query_text: str, 
         logger.error(f"Dense vector search failed on collection '{COLLECTION_NAME}': {e}")
         vector_results = []
 
-    # 2. Dynamic Multilingual Lexical Search (Keyword Matching)
     keywords = extract_meaningful_keywords(query_text)
-    
     if keywords:
         keyword_filter = models.Filter(
             should=[
                 models.FieldCondition(
-                    key="content",
+                    key=PAYLOAD_TEXT_KEY,
                     match=models.MatchText(text=" ".join(keywords))
                 )
             ]
@@ -86,7 +102,6 @@ def hybrid_search(qdrant: QdrantClient, openai_client: OpenAI, query_text: str, 
     else:
         lexical_results = []
 
-    # 3. Reciprocal Rank Fusion (RRF)
     rrf_scores = {}
     k_constant = 60
 
@@ -101,8 +116,27 @@ def hybrid_search(qdrant: QdrantClient, openai_client: OpenAI, query_text: str, 
     add_ranks(vector_results, weight=1.2)
     add_ranks(lexical_results, weight=1.0)
 
-    fused_results = sorted(rrf_scores.values(), key=lambda x: x["score"], reverse=True)
-    return fused_results[:top_k]
+    candidates = sorted(rrf_scores.values(), key=lambda x: x["score"], reverse=True)[:20]
+
+    if not candidates:
+        return []
+
+    # -------------------------------------------------------------
+    # PHASE 2: CROSS-ENCODER RERANKING (Precision Filtering)
+    # -------------------------------------------------------------
+    reranker = get_reranker_model()
+    pairs = []
+    for candidate in candidates:
+        content = candidate["payload"].get(PAYLOAD_TEXT_KEY, "")
+        pairs.append([query_text, content])
+
+    rerank_scores = reranker.predict(pairs)
+
+    for idx, candidate in enumerate(candidates):
+        candidate["rerank_score"] = float(rerank_scores[idx])
+
+    reranked_results = sorted(candidates, key=lambda x: x["rerank_score"], reverse=True)
+    return reranked_results[:top_k]
 
 def extract_doc_identifier(payload: dict) -> str:
     """Agnostically searches payload for document metadata IDs."""
@@ -118,7 +152,7 @@ def main():
     qdrant = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
     openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    logger.info(f"Starting Dynamic Multilingual Hybrid RAG Evaluation on Collection: [{COLLECTION_NAME}]...")
+    logger.info(f"Starting Reranked Advanced Hybrid RAG Evaluation on Collection: [{COLLECTION_NAME}]...")
 
     hits = 0
     reciprocal_ranks = []
@@ -136,12 +170,12 @@ def main():
 
         logger.info(f"Query {idx}: {query[:50]}...")
         
-        top_hits = hybrid_search(qdrant, openai_client, query, top_k=5)
+        top_hits = hybrid_search_with_rerank(qdrant, openai_client, query, top_k=5)
         retrieved_ids = [extract_doc_identifier(h.get("payload", {})) for h in top_hits]
 
         rank_found = None
         for r, doc_id in enumerate(retrieved_ids, 1):
-            if any(exp in doc_id for exp in expected):
+            if any(str(exp).strip().lower() in doc_id.lower() for exp in expected):
                 rank_found = r
                 break
 
@@ -160,9 +194,10 @@ def main():
 
     report_text = f"""
 ==================================================
-KNOWLEDGEFLOW HYBRID RAG EVALUATION REPORT
+KNOWLEDGEFLOW ADVANCED RAG EVALUATION REPORT
 ==================================================
 Target Collection  : {COLLECTION_NAME}
+Retrieval Strategy : Hybrid (Dense + BM25 RRF) + Cross-Encoder Rerank
 Total Test Queries : {total_queries}
 Hit Rate @ top_k   : {hit_rate:.4f} ({hit_rate * 100:.2f}%)
 MRR (Rank Score)   : {mrr:.4f}
