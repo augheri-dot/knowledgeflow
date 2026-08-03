@@ -2,6 +2,8 @@
 
 **Enterprise Knowledge Intelligence Platform**
 
+**Live Demo:** [knowledgeflow.streamlit.app](https://knowledgeflow.streamlit.app)
+
 KnowledgeFlow transforms organizational documents into trusted, searchable, and AI-ready knowledge using modern Data Engineering and Artificial Intelligence.
 
 ---
@@ -9,13 +11,14 @@ KnowledgeFlow transforms organizational documents into trusted, searchable, and 
 ## Project Status
 
 | Item | Status |
-|------|--------|
-| Project Phase | Sprint 0 – Foundation |
-| Current Version | v0.1.0 |
-| Development Status | Active Development |
-| License | Apache License 2.0 |
+| :--- | :--- |
+| **Project Phase** | Sprint 5 – Production Deployment |
+| **Current Version** | v1.0.0 |
+| **Development Status** | Completed (Advanced RAG with Reranking & Evaluation) |
+| **Primary Domain** | EU Digital Regulations Compliance (EU AI Act, GDPR, Data Act, DSA) |
+| **License** | Apache License 2.0 |
 
-KnowledgeFlow is currently in the engineering foundation phase. The primary objective of Sprint 0 is to establish a scalable architecture, engineering standards, documentation, and development environment before implementation begins.
+KnowledgeFlow has successfully completed its development lifecycle through Sprint 5 (Production Deployment). The platform is fully operational, featuring an end-to-end Advanced RAG pipeline with hybrid search (Qdrant), Cross-Encoder reranking, automated RAG evaluation (Hit Rate: 100%, MRR: 1.0), and containerized deployment with FastAPI and Streamlit.
 
 ---
 
